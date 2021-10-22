@@ -46,7 +46,8 @@ export const App = () => {
   return (
     <CompilationRequestContext.Provider value={request}>
       <div className="app">
-        { user ? (user.username == "instructor" ? ( <InstructorView user={user} /> ) : ( <StudentView user={user} /> )) : ( <LoginForm/> )  }      
+        <LoginForm/>
+        {/* { user ? (user.username == "instructor" ? ( <InstructorView/> ) : ( <StudentView/> )) : ( <LoginForm/> )  }       */}
       </div>
     </CompilationRequestContext.Provider>
   );

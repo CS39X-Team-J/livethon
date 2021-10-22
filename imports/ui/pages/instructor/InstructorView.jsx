@@ -3,7 +3,9 @@ import { getModules } from "../../components/Module.jsx";
 import { useTracker } from "meteor/react-meteor-data";
 import { Solution } from "../../components/Solution.jsx";
 
-export const InstructorView = ({ user }) => {
+export const InstructorView = () => {
+  const user = useTracker(() => Meteor.user());
+  
   const [modules, setModules] = useTracker(() => {
     return getModules(user);
   });
@@ -13,7 +15,7 @@ export const InstructorView = ({ user }) => {
     <div className="InstructorView">
         {getModules(user).map((module) => {
           return (
-            <Solution module={module} key={module._id}></Solution>
+            <Solution user={module.user}></Solution>
           );
         })}
     </div>

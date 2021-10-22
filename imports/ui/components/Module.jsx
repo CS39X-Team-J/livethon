@@ -7,14 +7,19 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-github";
 
-export const getModules = (user) => {
+const studentJoin = ({ session, user }) => {
+
+}
+
+
+export const getLatestSnapshots = ({ user, session }) => {
   if (user.username == "instructor") {
     return ModulesCollection.find({}).fetch();
   }
-  let modules = ModulesCollection.find({ user: user._id }).fetch();
+  let modules = ModulesCollection.findOne({ user: user._id, session: session }, { sort: { createdAt: -1 }}).fetch();
   
   if (modules.length < 1) {
-    modules = ModulesCollection.insert({contents: "print(\"Hello, world!\")", createdAt: new Date(), user: user._id});
+    modules = ModulesCollection.insert({ snapshot: "# Type your solution to the exercise here", createdAt: new Date(), user: user._id, session: session });
   }
   
   return useTracker(() => modules);
@@ -30,7 +35,7 @@ export const ResultViewer = ({ module_id }) => {
   </div>;
 }
 
-export const Module = ({ module, title }) => {
+export const Module = ({ user, title }) => {
   const request = useContext(CompilationRequestContext);
   const [output, setOutput] = useState(null);
 
@@ -44,19 +49,20 @@ export const Module = ({ module, title }) => {
       }
   }
 
-  const onChange = (module, setOutput) => async (newVal, event) => {
-    const script = newVal;
-    ModulesCollection.update(module._id, {
-      $set: {
-        contents: script
-      }
+  const onChange = (setOutput) => async (newVal, event) => {
+    const snapshot = newVal;
+    ModulesCollection.insert({
+      snapshot,
+      createdAt: new Date(),
+      session,
+      user: user._id,
     });
   
-    compile(script, setOutput);
+    compile(snapshot, setOutput);
   }
 
   useEffect(() => {
-    compile(module.contents, setOutput);
+    compile(module.snapshot, setOutput);
   }, []);
 
   useEffect(() => {
@@ -74,22 +80,26 @@ export const Module = ({ module, title }) => {
 
   return (
     <div>
-        <h2>{title}</h2>
+        
+        {title ? (<h2>{title}</h2>) : ""}
+
         <AceEditor
-        mode="python"
-        theme="github"
-        setOptions={{
+          mode="python"
+          theme="github"
+          setOptions={{
             useSoftTabs: true
-        }}
-        height="200px"
-        width="350px"
-        onChange={onChange(module, setOutput)}
-        debounceChangePeriod={1000}
-        name={module._id}
-        editorProps={{ $blockScrolling: true }}
-        value={module.contents}
+          }}
+          height="200px"
+          width="350px"
+          onChange={onChange(module, setOutput)}
+          debounceChangePeriod={1000}
+          name={module._id}
+          editorProps={{ $blockScrolling: true }}
+          value={module.contents}
         />
+        
         {output ? <ResultViewer module_id={module._id} /> : <p>Missing output</p>}
+
     </div>
   );
 };

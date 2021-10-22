@@ -38,3 +38,8 @@ b {
   white-space: "pre-wrap";
   font-family: monospace;
 }
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}

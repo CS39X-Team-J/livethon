@@ -7,7 +7,7 @@ const getStudentName = (id) => {
   return student?.username || "";
 };
 
-export const Solution = ({ module }) => {
+export const Solution = ({ user }) => {
   const [feedback, setFeedback] = useState("");
 
   const submitFeedback = () => {
@@ -16,8 +16,8 @@ export const Solution = ({ module }) => {
   };
 
   return (
-    <Fragment key={module._id}>
-      <Module module={module} title={getStudentName(module.user)} />
+    <Fragment key={user._id}>
+      <Module user={user} title={getStudentName(user._id)} />
       <form onSubmit={submitFeedback}>
         <input onInput={(e) => setFeedback(e.target.value)}></input>
         <button>Submit</button>
