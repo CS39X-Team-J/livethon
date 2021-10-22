@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
-import { ModulesCollection, RunsCollection } from '../api/modules';
+import { ModulesCollection, RunsCollection } from '../../api/modules';
 
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
@@ -18,13 +18,17 @@ function runPython(script, context, onSuccess, onError){
 }
 
 export const getModules = (user) => {
-    let modules = user.username == "instructor" ? ModulesCollection.find({}).fetch() : ModulesCollection.find({ user: user._id }).fetch();
-    console.log(modules);
-    if (modules.length < 1) {
-      modules = ModulesCollection.insert({contents: "print(\"Hello, world!\")", createdAt: new Date(), user: user._id});
-    }
-    return useTracker(() => modules);
-  }  
+  if (user.username == "instructor") {
+    return ModulesCollection.find({}).fetch();
+  }
+  let modules = ModulesCollection.find({ user: user._id }).fetch();
+  
+  if (modules.length < 1) {
+    modules = ModulesCollection.insert({contents: "print(\"Hello, world!\")", createdAt: new Date(), user: user._id});
+  }
+  
+  return useTracker(() => modules);
+}  
 
 // Transform the run (callback) form to a more modern async form.
 // This is what allows to write:
@@ -103,7 +107,7 @@ export const Module = ({ module, title }) => {
         editorProps={{ $blockScrolling: true }}
         value={module.contents}
         />
-        {output ? <div className="output"><div>{output}</div></div> : <p>Missing output</p>}
+        {output ? <ResultViewer module_id={module._id} /> : <p>Missing output</p>}
     </div>
   );
 };
