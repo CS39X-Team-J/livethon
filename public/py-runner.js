@@ -17,28 +17,30 @@ self.onmessage = async(event) => {
      // since loading package is asynchronous, we need to make sure loading is done:
     await pythonLoading;
     // Don't bother yet with this line, suppose our API is built in such a way:
-    const {python, ...context} = event.data;
+    const {code, id} = event.data;
     // The worker copies the context in its own "memory" (an object mapping name to values)
-    for (const key of Object.keys(context)){
-        self[key] = context[key];
-    }
+    // for (const key of Object.keys(context)){
+    //     self[key] = context[key];
+    // }
 
-    await self.pyodide.runPythonAsync(`
-import io, sys
-sys.stdout = io.StringIO()
-`)
+    // The reason we can't use await here is that it allows multiple compilations
+    // to run with their runPython functions intermixed. Removing await fixed issues of stdout leak
+    self.pyodide.runPython(`
+        import io, sys
+        sys.stdout = io.StringIO()
+    `)
 
     // Now is the easy part, the one that is similar to working in the main thread:
     try {
-        let results = await self.pyodide.runPythonAsync(python);
-        let stdout = await self.pyodide.runPythonAsync("sys.stdout.getvalue()")
+        let results = self.pyodide.runPython(code);
+        let stdout = self.pyodide.runPython("sys.stdout.getvalue()")
         self.postMessage({
-            results, stdout
+            results, stdout, id
         });
     }
     catch (error){
         self.postMessage(
-            {error : error.message}
+            {error : error.message, id}
         );
     }
 }

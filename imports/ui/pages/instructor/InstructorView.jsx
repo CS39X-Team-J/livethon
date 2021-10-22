@@ -9,6 +9,7 @@ export const InstructorView = ({ user }) => {
   });
 
   return (
+
     <div className="InstructorView">
         {getModules(user).map((module) => {
           return (
