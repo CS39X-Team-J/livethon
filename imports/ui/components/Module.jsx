@@ -60,12 +60,16 @@ export const Module = ({ module, title }) => {
   }, []);
 
   useEffect(() => {
-    RunsCollection.insert({
+    // don't let a reload of the page temporarily remove output
+    // for other client's looking at the same code
+    if (output != null) {
+      RunsCollection.insert({
         module: module._id,
         input: "",
         output,
         createdAt: new Date()
-    });
+      });
+    }    
   }, [output]);
 
   return (

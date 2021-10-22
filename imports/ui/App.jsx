@@ -14,7 +14,7 @@ export const App = () => {
   const user = useTracker(() => Meteor.user());
 
   worker.onmessage = (e) => {
-    console.log(e.data.id)
+    // resolve the promise by the module id
     compilations.get(e.data.id)(e.data);
   }
   
