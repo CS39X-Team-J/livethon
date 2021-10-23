@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { FeedbackCollection } from "../../api/modules";
 import { useTracker } from "meteor/react-meteor-data";
+import { SessionContext } from "../App";
 
 export const Feedback = ({ module }) => {
+  const user = useTracker(() => Meteor.user());
+  const { session, setSession } = useContext(SessionContext);
+
   const feedback = useTracker(() => {
-    return FeedbackCollection.find({ module: module._id }).fetch();
+    return FeedbackCollection.find({ user, session }).fetch();
   });
 
   return (

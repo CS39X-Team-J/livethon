@@ -1,22 +1,27 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useState, Fragment, useEffect } from "react";
-import { getModules, Module } from "../../components/Module.jsx";
+import React, { useState, Fragment, useEffect, useContext } from "react";
+import { Module, addStudentToSession, getLatestStudentSnapshot, getCodeByStudentSession } from "../../components/Module.jsx";
 import { Feedback } from "../../components/Feedback.jsx";
 import { useTracker } from 'meteor/react-meteor-data';
+import { SessionContext } from '../../App.jsx';
 
 export const StudentView = () => {
   const user = useTracker(() => Meteor.user());
+  const { session } = useContext(SessionContext);
 
   const [module, setModule] = useTracker(() => {
-    return getModules(user);
+    const code = getCodeByStudentSession({ session, user });
+    if (!code) {
+      addStudentToSession({ session, user });
+    }
+    return [getCodeByStudentSession({ session, user })];
   });
 
   return (
+    
     <div className="studentModule">
-      <Fragment>
-        <Module user={user} />
+        <Module module={module} />
         <Feedback user={user} />
-      </Fragment>  
     </div>
   );
 };

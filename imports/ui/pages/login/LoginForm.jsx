@@ -1,28 +1,52 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useState, Fragment } from 'react';
+import React, { useState, useContext } from 'react';
 import { Accounts } from 'meteor/accounts-base';
+import { SessionContext } from '../../App';
+import { SessionsCollection } from '../../../api/modules';
 
 export const LoginForm = () => {
+  const { session, setSession } = useContext(SessionContext);
   const [username, setUsername] = useState('');
-  const [session, setSession] = useState('');
+  const [password, setPassword] = useState('');
   const [isStudent, setIsStudent] = useState(true);
+
+  const sessionExists = () => {
+    return SessionsCollection.find({ session: session }).fetch().length > 0;
+  }
 
   const submit = e => {
     e.preventDefault();
     // students can sign in with any name
     if (isStudent) {
-      if (!Accounts.findByUsername(username)) {
-        Accounts.createUser({
-          username,
-          password: "",
-        })
+
+      if (!sessionExists()) {
+        alert("Given session does not exist. Please try again!");
+      } else {
+        Meteor.loginWithPassword(username, "password", (e) => {
+          Accounts.createUser({
+            username,
+            password: "password"
+          });
+          Meteor.loginWithPassword(username, "password");
+        });
       }
-      Meteor.loginWithPassword(username, "");
+      
     } else {
+
+      if (!sessionExists()) {
+        SessionsCollection.insert({
+          session,
+          instructions: {
+            title: "Getting started with python's functions!",
+            description: "Create a function that takes two strings and prints them on the same line."
+          },
+          users: []
+        });
+      }
+
       Meteor.loginWithPassword(username, password);
     }
-    
-    
+  
   };
 
   return (           
@@ -64,9 +88,6 @@ export const LoginForm = () => {
               onChange={e => setSession(e.target.value)}
             />
           </div>
-        
-
-        
 
         <button type="submit">Log In</button>
         <a href="#" onClick={() => setIsStudent(!isStudent)}>Sign in as {isStudent ? "Instructor" : "Student"} instead</a>

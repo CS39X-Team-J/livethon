@@ -6,7 +6,7 @@ import { SessionsCollection } from '../imports/api/modules';
 // Placeholder for actual login credentials
 // All passwords are "password"
 export const INSTRUCTOR = "instructor";
-const STUDENTS = []
+const STUDENTS = [];
 
 Meteor.startup(() => {
 

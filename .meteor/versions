@@ -1,6 +1,7 @@
 accounts-base@2.1.0
 accounts-password@2.1.0
 allow-deny@1.1.0
+appcache@1.2.7
 autopublish@1.0.7
 autoupdate@1.7.0
 babel-compiler@7.7.0

@@ -7,11 +7,13 @@ import { InstructorView } from './pages/instructor/InstructorView.jsx';
 import { createContext } from 'react';
 
 export const CompilationRequestContext = createContext();
+export const SessionContext = createContext();
 
 const worker = new Worker('/py-runner.js');
 
 export const App = () => {
   const user = useTracker(() => Meteor.user());
+  const [session, setSession] = useState("lab01");
 
   worker.onmessage = (e) => {
     // resolve the promise by the module id
@@ -43,12 +45,18 @@ export const App = () => {
 
   }
 
+  const logout = () => {
+    Meteor.logout();
+  }
+
   return (
     <CompilationRequestContext.Provider value={request}>
-      <div className="app">
-        <LoginForm/>
-        {/* { user ? (user.username == "instructor" ? ( <InstructorView/> ) : ( <StudentView/> )) : ( <LoginForm/> )  }       */}
-      </div>
+      <SessionContext.Provider value={{ session, setSession }}>
+        { user ? (<button onClick={logout}>Logout</button>) : "" }
+        <div className="app">
+          { user ? (user.username == "instructor" ? ( <InstructorView/> ) : ( <StudentView/> )) : ( <LoginForm/> )  }      
+        </div>
+      </SessionContext.Provider>
     </CompilationRequestContext.Provider>
   );
 };
