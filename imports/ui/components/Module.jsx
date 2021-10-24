@@ -29,12 +29,26 @@ export const getStudentsBySession = ({ session }) => {
   return SessionsCollection.findOne({ session }).users;
 }
 
+export const createSnapshot = ({ module, code, date }) => {
+  console.log("Creating snapshot")
+  return SnapshotsCollection.insert({
+    code,
+    createdAt: date,
+    session: module.session,
+    user: module.user,
+  });
+}
+
 export const getCodeBySession = ({ session }) => {
   return ModulesCollection.find({ session }).fetch();
 }
 
 export const getSnapshotsByStudentSession = ({ session, user }) => {
   return SnapshotsCollection.find({ session, user }, { sort: { createdAt: -1 } }).fetch();
+}
+
+export const getSnapshotByStudentSessionDate = ({ session, user, date }) => {
+  return SnapshotsCollection.findOne({ session, user, createdAt: date });
 }
 
 export const getCodeByStudentSession = ({ session, user }) => {
@@ -54,7 +68,7 @@ export const ResultViewer = ({ module_id }) => {
 // seconds from last snapshot before onchange can log another snapshot
 const MIN_SNAPSHOT_DELAY = 10;
 
-export const Module = ({ module, title }) => {
+export const Module = ({ module, title, onSelectionChange }) => {
   const request = useContext(CompilationRequestContext);
   const { session } = useContext(SessionContext);
   const [output, setOutput] = useState(null);
@@ -97,6 +111,8 @@ export const Module = ({ module, title }) => {
       return
     }
 
+    let currentTime = new Date()
+
     // update current module
     ModulesCollection.update({
       _id: module._id
@@ -108,16 +124,11 @@ export const Module = ({ module, title }) => {
 
     // if the time since last collected snapshot is greater than MIN_SNAPSHOT_DELAY
     // record a snapshot and set last snapshot date to current time
-    if (((new Date()).getTime() - lastSnapshotDate.getTime()) > MIN_SNAPSHOT_DELAY) {
+    if (((currentTime).getTime() - lastSnapshotDate.getTime()) > MIN_SNAPSHOT_DELAY) {
       // add snapshot to snapshot collection
-      SnapshotsCollection.insert({
-        code: currentSnapshot,
-        createdAt: new Date(),
-        session,
-        user: module.user,
-      });
+      createSnapshot({ module, code: currentSnapshot, date: currentTime });
 
-      setLastSnapshotDate(new Date());
+      setLastSnapshotDate(currentTime);
     }
 
     // compile
@@ -152,6 +163,7 @@ export const Module = ({ module, title }) => {
           setOptions={{
             useSoftTabs: true
           }}
+          onSelectionChange={onSelectionChange ? onSelectionChange : () => {}}
           height="200px"
           width="350px"
           onChange={onChange}

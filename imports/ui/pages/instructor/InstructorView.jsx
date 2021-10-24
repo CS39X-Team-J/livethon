@@ -17,7 +17,7 @@ export const InstructorView = () => {
     <div className="InstructorView">
         {modules.map((module) => {
           return (
-          <Solution module={module} key={module._id}></Solution>
+            <Solution module={module} key={module._id}></Solution>
           );
         })}
     </div>
