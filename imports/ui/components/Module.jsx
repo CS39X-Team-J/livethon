@@ -81,10 +81,6 @@ export const Module = ({ module, title }) => {
       }
   }
 
-  useEffect(() => {
-    console.log(module.code)
-  }, [module])
-
   const onChange = (currentSnapshot) => {
 
     if (currentSnapshot == ModulesCollection.findOne({ _id: module._id }).code) {
