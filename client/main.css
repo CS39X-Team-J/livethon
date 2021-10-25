@@ -13,16 +13,20 @@ b {
   flex-direction: row;
 }
 
-.feedback-container {
-  padding: 20px;
-  border: 1px solid black;
+.feedbackContainer {
+  padding: 5px;
+  /* border: 1px solid black; */
 
 }
 
-.feedback {
-  margin: 5px;
-  padding: 5px;
-  background-color: #ddd;
+.allFeedback {
+  /* margin: 5px; */
+  /* padding: 5px; */
+  /* background-color: #ddd; */
+  overflow: auto;
+  width: 30vw;
+  max-width: 800px;
+  min-width: 250px;
 }
 
 .allModules {
@@ -31,12 +35,18 @@ b {
   flex-direction: row;
 }
 
+.module-container {
+  width: 400px;
+}
+
 .output {
   padding: 8px;
   margin: 10px 10px 10px 0;
   background-color: #ddd;
   white-space: "pre-wrap";
   font-family: monospace;
+  /* width: 100%; */
+  box-sizing: border-box;
 }
 
 .login-form {
@@ -62,7 +72,8 @@ b {
 
 .feedback-message {
   background-color: #ddd;
-  width: 100%;
+  /* width: 100%; */
+  margin-top: 5px;
   padding: 4px;
 }
 

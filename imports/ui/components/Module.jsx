@@ -176,7 +176,7 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   }, [region])
 
   return (
-    <div>
+    <div class="module-container">
         
         {title ? (<h2>{title}</h2>) : ""}
 
@@ -186,9 +186,10 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
           setOptions={{
             useSoftTabs: true
           }}
+          highlightActiveLine={false}
           onSelectionChange={onSelectionChange ? onSelectionChange : () => {}}
           height="200px"
-          width="350px"
+          width="400px"
           onChange={onChange}
           debounceChangePeriod={1000}
           name={module._id}

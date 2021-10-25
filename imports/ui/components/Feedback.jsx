@@ -17,7 +17,7 @@ export const Feedback = ({ module, beginFocus, endFocus }) => {
   }
 
   return (
-    <div className="feedback-container">
+    <div className="feedbackContainer">
       <h3>{"Feedback"}</h3>
       <div className="allFeedback">
         {feedback.map((feedback) => (
