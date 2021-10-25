@@ -1,5 +1,5 @@
 import { FeedbackCollection } from "../../api/modules";
-import React, { useState, Fragment, useContext } from "react";
+import React, { useState, Fragment, useContext, useEffect } from "react";
 import { createSnapshot, getSnapshotsByStudentSession, Module } from "./Module";
 import { SessionContext } from "../App";
 import { getSnapshotByStudentSessionDate } from "./Module";
@@ -16,11 +16,9 @@ export const Solution = ({ module }) => {
     let snapshotID;
     
     const snap = getSnapshotByStudentSessionDate({ user: module.user, session, date: module.createdAt });
-    console.log(snap)
     if (!snap) {
       snapshotID = createSnapshot({ module, code: module.code, date: module.createdAt });
     } else {
-      console.log("success")
       snapshotID = snap._id;
     }
 
@@ -28,7 +26,7 @@ export const Solution = ({ module }) => {
       body: feedback,
       module: module._id, 
       snapshot: snapshotID,
-      region: selection.getAllRanges(), 
+      region: selection ? selection.getAllRanges() : [], 
     });
   };
 
