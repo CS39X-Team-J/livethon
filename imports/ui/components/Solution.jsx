@@ -14,7 +14,9 @@ export const Solution = ({ module }) => {
     // check if snapshot of current code exists,
     // if not, create it and reference it in feedback collection
     let snapshotID;
+    
     const snap = getSnapshotByStudentSessionDate({ user: module.user, session, date: module.createdAt });
+    console.log(snap)
     if (!snap) {
       snapshotID = createSnapshot({ module, code: module.code, date: module.createdAt });
     } else {
@@ -32,7 +34,7 @@ export const Solution = ({ module }) => {
 
   return (
     <Fragment key={module._id}>
-      <Module module={module} title={module.user.username} onSelectionChange={(newRegion) => { setSelection(newRegion) }} />
+      <Module module={module} title={module.user.username} onSelectionChange={(newRegion) => { setSelection(newRegion) }} readonly={false} region={[]} />
       <input onInput={(e) => setFeedback(e.target.value)}/>
       <button onClick={submitFeedback}>Submit</button>
     </Fragment>
