@@ -30,7 +30,6 @@ export const getStudentsBySession = ({ session }) => {
 }
 
 export const createSnapshot = ({ module, code, date }) => {
-  console.log("Creating snapshot")
   return SnapshotsCollection.insert({
     code,
     createdAt: date,
@@ -96,7 +95,8 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
       }
   }
 
-  const onChange = (currentSnapshot) => {
+  const onChange = async (currentSnapshot) => {
+   
     // when reviewing feedback on a snapshot, prevent onchange from firing
     if (!readonly) {
       if (currentSnapshot == ModulesCollection.findOne({ _id: module._id }).code) {
@@ -113,18 +113,17 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
         return
       }
   
-      let currentTime = new Date()
-  
+      let currentTime = new Date();
+      
       // update current module
-      ModulesCollection.update({
-        _id: module._id,
-      }, {
+      ModulesCollection.update(module._id, {
         $set: {
           code: currentSnapshot,
           createdAt: currentTime,
         }
-      })
-  
+      });
+
+
       // if the time since last collected snapshot is greater than MIN_SNAPSHOT_DELAY
       // record a snapshot and set last snapshot date to current time
       if (((currentTime).getTime() - lastSnapshotDate.getTime()) > MIN_SNAPSHOT_DELAY) {
@@ -137,9 +136,9 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
     }
 
     compile(currentSnapshot);
-    
   }
 
+  
   useEffect(() => {
     compile(module.code);
   }, [readonly])
@@ -162,7 +161,6 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   }, [output]);
 
   useEffect(() => {
-    console.log(region)
     setMarkers(region.map(r => {
       return {
         startRow: r.start.row,
@@ -198,7 +196,7 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
           markers={markers}
         />
         
-        {output ? <ResultViewer module_id={module._id} /> : <p>Missing output</p>}
+        <ResultViewer module_id={module._id} />
 
     </div>
   );

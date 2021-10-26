@@ -79,5 +79,5 @@ b {
 
 .error-marker {
   position: absolute;
-  background-color: #FFFF00;
+  background-color: rgba(134, 247, 134, 150);
 }

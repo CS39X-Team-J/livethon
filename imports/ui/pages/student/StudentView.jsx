@@ -11,12 +11,12 @@ export const StudentView = () => {
   const { session } = useContext(SessionContext);
   const [currentFocus, setFocus] = useState("CURRENT");
 
-  const [module, setModule] = useTracker(() => {
+  const module = useTracker(() => {
     const code = getCodeByStudentSession({ session, user });
     if (!code) {
       addStudentToSession({ session, user });
     }
-    return [getCodeByStudentSession({ session, user })];
+    return getCodeByStudentSession({ session, user });
   });
 
   const focusFeedback = (id) => () => {

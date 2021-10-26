@@ -15,6 +15,7 @@ export const InstructorView = () => {
   return (
 
     <div className="InstructorView">
+      <h1>{ session }</h1>
         {modules.map((module) => {
           return (
             <Solution module={module} key={module._id}></Solution>
