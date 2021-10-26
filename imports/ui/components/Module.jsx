@@ -157,7 +157,7 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   }, [region])
 
   return (
-    <div class="module-container">
+    <div className="module-container">
         
         <h3>{title}</h3>
 
