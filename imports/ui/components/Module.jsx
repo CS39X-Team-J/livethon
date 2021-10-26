@@ -70,7 +70,6 @@ const MIN_SNAPSHOT_DELAY = 10;
 export const Module = ({ module, title, onSelectionChange, readonly, region }) => {
   const request = useContext(CompilationRequestContext);
   const [output, setOutput] = useState(null);
-  const [lastSnapshotDate, setLastSnapshotDate] = useState(new Date());
   const [markers, setMarkers] = useState([]);
 
   // https://stackoverflow.com/questions/57624060/how-can-i-check-if-the-component-is-unmounted-in-a-functional-component
@@ -95,11 +94,10 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   }
 
   const logSnapshot = async (time, currentSnapshot) => {
+    const lastSnapshotDate = SnapshotsCollection.findOne({ user: module.user, session: module.session }, { sort: { createdAt: -1 }}).createdAt;
     if ((time.getTime() - lastSnapshotDate.getTime()) > MIN_SNAPSHOT_DELAY) {
       // add snapshot to snapshot collection
       createSnapshot({ module, code: currentSnapshot, date: time });
-    
-      setLastSnapshotDate(time);
     }
   }
 
@@ -119,17 +117,17 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
 
     compile(currentSnapshot);
     
-    logSnapshot(currentTime, currentSnapshot)
+    logSnapshot(currentTime, currentSnapshot);
     
   }
 
   
   useEffect(() => {
-    //compile(module.code);
+    compile(module.code);
   }, [readonly])
 
   useEffect(() => {
-    //compile(module.code);
+    compile(module.code);
   }, []);
 
   useEffect(() => {
@@ -171,8 +169,8 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
           }}
           highlightActiveLine={false}
           onSelectionChange={onSelectionChange ? onSelectionChange : () => {}}
-          height="200px"
-          width="400px"
+          height="400px"
+          width="600px"
           onChange={onChange}
           debounceChangePeriod={1000}
           name={module._id}

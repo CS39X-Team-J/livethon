@@ -52,7 +52,7 @@ export const App = () => {
   return (
     <CompilationRequestContext.Provider value={request}>
       <SessionContext.Provider value={{ session, setSession }}>
-        { user ? (<button onClick={logout}>Logout</button>) : "" }
+        { user ? (<Fragment><button onClick={logout}>Logout</button> Logged in as {user.username}</Fragment>) : "" }
         <div className="app">
           { user ? (user.username == "instructor" ? ( <InstructorView/> ) : ( <StudentView/> )) : ( <LoginForm/> )  }      
         </div>
