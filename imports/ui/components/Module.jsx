@@ -69,7 +69,6 @@ const MIN_SNAPSHOT_DELAY = 10;
 
 export const Module = ({ module, title, onSelectionChange, readonly, region }) => {
   const request = useContext(CompilationRequestContext);
-  const { session } = useContext(SessionContext);
   const [output, setOutput] = useState(null);
   const [lastSnapshotDate, setLastSnapshotDate] = useState(new Date());
   const [markers, setMarkers] = useState([]);
@@ -95,7 +94,7 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
       }
   }
 
-  const onChange = async (currentSnapshot) => {
+  const onChange = (currentSnapshot) => {
    
     // when reviewing feedback on a snapshot, prevent onchange from firing
     if (!readonly) {
@@ -150,7 +149,7 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   useEffect(() => {
     // don't let a reload of the page temporarily remove output
     // for other client's looking at the same code
-    if (output != null) {
+    if (output != null && !readonly) {
       RunsCollection.insert({
         module: module._id,
         input: "",
@@ -176,7 +175,7 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   return (
     <div class="module-container">
         
-        {title ? (<h2>{title}</h2>) : ""}
+        <h3>{title}</h3>
 
         <AceEditor
           mode="python"

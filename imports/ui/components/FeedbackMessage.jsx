@@ -2,10 +2,10 @@ import React, { useContext } from "react";
 import { FeedbackCollection } from "../../api/modules";
 import { useTracker } from "meteor/react-meteor-data";
 
-export const FeedbackMessage = ({ comment, isHelpful, beginFocus, endFocus }) => {
+export const FeedbackMessage = ({ comment, isHelpful }) => {
 
   return (
-    <div className="feedback-message" onMouseEnter={beginFocus} onMouseLeave={endFocus}>
+    <div className="feedback-message">
       {comment}
       <button onClick={isHelpful}>This helped me!</button>
     </div>

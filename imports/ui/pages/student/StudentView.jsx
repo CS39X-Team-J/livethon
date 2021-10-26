@@ -34,7 +34,7 @@ export const StudentView = () => {
   return (
     
     <div className="studentModule">
-        <Module module={currentFocus == "CURRENT" ? module : currentFocus.snapshot } readonly={currentFocus != "CURRENT"} region={currentFocus != "CURRENT" ? currentFocus.feedback.region : []}/>
+        <Module module={currentFocus == "CURRENT" ? module : currentFocus.snapshot } readonly={currentFocus != "CURRENT"} region={currentFocus != "CURRENT" ? currentFocus.feedback.region : []} title={user.username}/>
         <Feedback module={module} beginFocus={focusFeedback} endFocus={endFocusFeedback}/>
     </div>
   );
