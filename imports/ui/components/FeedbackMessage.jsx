@@ -6,8 +6,11 @@ export const FeedbackMessage = ({ comment, isHelpful }) => {
 
   return (
     <div className="feedback-message">
-      {comment}
-      <button onClick={isHelpful}>This helped me!</button>
+      <p>{comment}</p>
+
+      <div className="feedback-reaction">
+        <button onClick={isHelpful}>This helped me!</button>
+      </div>
     </div>
   );
 };

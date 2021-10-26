@@ -21,7 +21,7 @@ export const Feedback = ({ module, beginFocus, endFocus }) => {
       <h3>{"Feedback"}</h3>
       <div className="allFeedback">
         {feedback.map((feedback) => (
-          <div onMouseEnter={beginFocus(feedback._id)} onMouseLeave={endFocus(feedback._id)} class="feedback-message-container" key={feedback._id}>
+          <div onMouseEnter={beginFocus(feedback._id)} onMouseLeave={endFocus(feedback._id)} key={feedback._id}>
             <FeedbackMessage
               isHelpful={() => { markHelpful(feedback._id) }}
               beginFocus={beginFocus(feedback._id)}

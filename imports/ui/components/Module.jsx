@@ -39,7 +39,7 @@ export const createSnapshot = ({ module, code, date }) => {
 }
 
 export const getCodeBySession = ({ session }) => {
-  return ModulesCollection.find({ session }).fetch();
+  return useTracker(() => { return ModulesCollection.find({ session }).fetch() });
 }
 
 export const getSnapshotsByStudentSession = ({ session, user }) => {
@@ -94,56 +94,42 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
       }
   }
 
+  const logSnapshot = async (time, currentSnapshot) => {
+    if ((time.getTime() - lastSnapshotDate.getTime()) > MIN_SNAPSHOT_DELAY) {
+      // add snapshot to snapshot collection
+      createSnapshot({ module, code: currentSnapshot, date: time });
+    
+      setLastSnapshotDate(time);
+    }
+  }
+
   const onChange = (currentSnapshot) => {
-   
-    // when reviewing feedback on a snapshot, prevent onchange from firing
-    if (!readonly) {
-      if (currentSnapshot == ModulesCollection.findOne({ _id: module._id }).code) {
-        // prevent one onChange event being duplicated
-        // if client A makes change X to code, client B's onChange function will fire for that change X
-        // This also fixes weird glitches where an idle client can "erase" an active 
-        // client's modifications
-        // Here is a bad explanation
-        // Client A: adds "Hello!" and updates modules collection
-        //                          Client B: sees update in modules collection
-        // Client A: adds " World!" and updates modules collection
-        //                          Client B: update of modules triggers onChange event and Client B updates modules to be "Hello!"
-        // Client A: sees " World!" disappear and code is reverted to "Hello!" not "Hello! World!"
-        return
-      }
-  
-      let currentTime = new Date();
-      
-      // update current module
+    let currentTime = new Date();
+
+    // readonly means we are viewing past snapshot that we do not want to replace our current code
+    // if currentSnapshot is the same as the module.code and onChange is called, then we have a duplicate trigger of onChange
+    if (!readonly && currentSnapshot != module.code) {
       ModulesCollection.update(module._id, {
         $set: {
           code: currentSnapshot,
           createdAt: currentTime,
         }
       });
-
-
-      // if the time since last collected snapshot is greater than MIN_SNAPSHOT_DELAY
-      // record a snapshot and set last snapshot date to current time
-      if (((currentTime).getTime() - lastSnapshotDate.getTime()) > MIN_SNAPSHOT_DELAY) {
-        // add snapshot to snapshot collection
-        createSnapshot({ module, code: currentSnapshot, date: currentTime });
-  
-        setLastSnapshotDate(currentTime);
-      }
-      
     }
 
     compile(currentSnapshot);
+    
+    logSnapshot(currentTime, currentSnapshot)
+    
   }
 
   
   useEffect(() => {
-    compile(module.code);
+    //compile(module.code);
   }, [readonly])
 
   useEffect(() => {
-    compile(module.code);
+    //compile(module.code);
   }, []);
 
   useEffect(() => {
@@ -195,7 +181,10 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
           markers={markers}
         />
         
-        <ResultViewer module_id={module._id} />
+        {/* <ResultViewer module_id={module._id} /> */}
+        <div className="output">
+          {output}
+        </div>
 
     </div>
   );
