@@ -11,7 +11,7 @@ export const LoginForm = () => {
   const [isStudent, setIsStudent] = useState(true);
 
   const sessionExists = () => {
-    return SessionsCollection.find({ session: session }).fetch().length > 0;
+    return SessionsCollection.find({ name: session }).fetch().length > 0;
   }
 
   const submit = e => {
