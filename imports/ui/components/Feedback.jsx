@@ -1,5 +1,5 @@
 import React from "react";
-import { FeedbackCollection } from "../api/modules";
+import { FeedbackCollection } from "../../api/modules";
 import { useTracker } from "meteor/react-meteor-data";
 
 export const Feedback = ({ module }) => {

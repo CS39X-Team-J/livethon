@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
-import { getModules } from "./Module.jsx";
+import { getModules } from "../../components/Module.jsx";
 import { useTracker } from "meteor/react-meteor-data";
-import { Solution } from "./Solution.jsx";
+import { Solution } from "../../components/Solution.jsx";
 
 export const InstructorView = ({ user }) => {
   const [modules, setModules] = useTracker(() => {
@@ -9,14 +9,13 @@ export const InstructorView = ({ user }) => {
   });
 
   return (
+
     <div className="InstructorView">
-      <Fragment>
         {getModules(user).map((module) => {
           return (
             <Solution module={module} key={module._id}></Solution>
           );
         })}
-      </Fragment>
     </div>
   );
 };

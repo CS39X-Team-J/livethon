@@ -1,4 +1,4 @@
-import { FeedbackCollection } from "../api/modules";
+import { FeedbackCollection } from "../../api/modules";
 import React, { useState, Fragment } from "react";
 import { Module } from "./Module";
 
