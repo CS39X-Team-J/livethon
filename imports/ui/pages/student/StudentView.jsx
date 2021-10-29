@@ -22,7 +22,8 @@ export const StudentView = () => {
   const focusFeedback = (id) => () => {
     const feedback = FeedbackCollection.findOne({ _id: id });
     setFocus({
-      snapshot: SnapshotsCollection.findOne({ _id: feedback.snapshot }),
+      // prevent crashing when snapshot not found
+      snapshot: SnapshotsCollection.findOne({ _id: feedback.snapshot}) || {},
       feedback,
     });
   }
