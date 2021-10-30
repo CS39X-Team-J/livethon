@@ -95,8 +95,8 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   }
 
   const logSnapshot = async (time, currentSnapshot) => {
-    const lastSnapshotDate = SnapshotsCollection.findOne({ user: module.user, session: module.session }, { sort: { createdAt: -1 }}).createdAt;
-    if ((time.getTime() - lastSnapshotDate.getTime()) > MIN_SNAPSHOT_DELAY) {
+    const lastSnapshotDate = SnapshotsCollection.findOne({ user: module.user, session: module.session }, { sort: { createdAt: -1 }})?.createdAt;
+    if ((time.getTime() - (lastSnapshotDate ? lastSnapshotDate.getTime() : 0)) > MIN_SNAPSHOT_DELAY) {
       // add snapshot to snapshot collection
       createSnapshot({ module, code: currentSnapshot, output, date: time });
     }
