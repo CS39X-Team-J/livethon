@@ -13,16 +13,19 @@ b {
   flex-direction: row;
 }
 
-.feedback-container {
-  padding: 20px;
-  border: 1px solid black;
+.feedbackContainer {
+  padding: 5px;
+  /* border: 1px solid black; */
 
 }
 
-.feedback {
-  margin: 5px;
-  padding: 5px;
-  background-color: #ddd;
+.allFeedback {
+  /* margin: 5px; */
+  /* padding: 5px; */
+  /* background-color: #ddd; */
+  overflow: auto;
+  width: 700px;
+  height: 400px;
 }
 
 .allModules {
@@ -31,10 +34,50 @@ b {
   flex-direction: row;
 }
 
+.module-container {
+  width: 600px;
+}
+
 .output {
   padding: 8px;
   margin: 10px 10px 10px 0;
   background-color: #ddd;
   white-space: "pre-wrap";
   font-family: monospace;
+  /* width: 100%; */
+  box-sizing: border-box;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 90vw;
+  height: 90vh;
+}
+
+.login-form div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 300px;
+}
+
+.studentModule {
+  display: flex;
+  flex-direction: row;
+}
+
+.feedback-message {
+  background-color: #ddd;
+  margin-top: 5px;
+  padding: 4px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.error-marker {
+  position: absolute;
+  background-color: rgba(134, 247, 134, 150);
 }
