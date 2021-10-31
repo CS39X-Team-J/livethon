@@ -16,7 +16,7 @@ export const addStudentToSession = ({ session, user }) => {
     session,
   });
   
-  let sessionID = SessionsCollection.findOne({ session })._id;
+  let sessionID = SessionsCollection.findOne({ name: session })._id;
 
   if (!(getStudentsBySession({ session }).includes(user))) {
     SessionsCollection.update({ _id: sessionID }, {
