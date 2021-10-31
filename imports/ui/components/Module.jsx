@@ -26,7 +26,7 @@ export const addStudentToSession = ({ session, user }) => {
 }
 
 export const getStudentsBySession = ({ session }) => {
-  return SessionsCollection.findOne({ session }).users;
+  return SessionsCollection.findOne({ name: session }).users;
 }
 
 export const createSnapshot = ({ module, code, output, date }) => {
