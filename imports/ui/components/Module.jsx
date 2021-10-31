@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { ModulesCollection, RunsCollection, SessionsCollection, SnapshotsCollection } from '../../api/modules';
-import { CompilationRequestContext, SessionContext } from '../App';
+import { CompilationRequestContext } from '../App';
 
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
@@ -16,7 +16,7 @@ export const addStudentToSession = ({ session, user }) => {
     session,
   });
   
-  let sessionID = SessionsCollection.findOne({ session })._id;
+  let sessionID = SessionsCollection.findOne({ name: session })._id;
 
   if (!(getStudentsBySession({ session }).includes(user))) {
     SessionsCollection.update({ _id: sessionID }, {
@@ -26,12 +26,13 @@ export const addStudentToSession = ({ session, user }) => {
 }
 
 export const getStudentsBySession = ({ session }) => {
-  return SessionsCollection.findOne({ session }).users;
+  return SessionsCollection.findOne({ name: session }).users;
 }
 
-export const createSnapshot = ({ module, code, date }) => {
+export const createSnapshot = ({ module, code, output, date }) => {
   return SnapshotsCollection.insert({
     code,
+    output,
     createdAt: date,
     session: module.session,
     user: module.user,
@@ -94,10 +95,10 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   }
 
   const logSnapshot = async (time, currentSnapshot) => {
-    const lastSnapshotDate = SnapshotsCollection.findOne({ user: module.user, session: module.session }, { sort: { createdAt: -1 }}).createdAt;
-    if ((time.getTime() - lastSnapshotDate.getTime()) > MIN_SNAPSHOT_DELAY) {
+    const lastSnapshotDate = SnapshotsCollection.findOne({ user: module.user, session: module.session }, { sort: { createdAt: -1 }})?.createdAt;
+    if ((time.getTime() - (lastSnapshotDate ? lastSnapshotDate.getTime() : 0)) > MIN_SNAPSHOT_DELAY) {
       // add snapshot to snapshot collection
-      createSnapshot({ module, code: currentSnapshot, date: time });
+      createSnapshot({ module, code: currentSnapshot, output, date: time });
     }
   }
 
@@ -168,7 +169,6 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
             useSoftTabs: true
           }}
           highlightActiveLine={false}
-          onSelectionChange={onSelectionChange ? onSelectionChange : () => {}}
           height="400px"
           width="600px"
           onChange={onChange}

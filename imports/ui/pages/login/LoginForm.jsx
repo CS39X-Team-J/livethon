@@ -18,7 +18,7 @@ export const LoginForm = () => {
     e.preventDefault();
     // students can sign in with any name
     if (isStudent) {
-
+      console.log(`Current Session: ${session}`)
       if (!sessionExists()) {
         alert("Given session does not exist. Please try again!");
       } else {
@@ -35,7 +35,7 @@ export const LoginForm = () => {
 
       if (!sessionExists()) {
         SessionsCollection.insert({
-          session,
+          name: session,
           instructions: {
             title: "Getting started with python's functions!",
             description: "Create a function that takes two strings and prints them on the same line."
