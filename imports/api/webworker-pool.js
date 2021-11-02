@@ -1,7 +1,6 @@
 export class WebWorkerPool {
 
     constructor(poolSize = 3, timeout = 1) {
-        console.log("YOU SHOULD SEE THIS ONLY ONCE")
         this.poolSize = poolSize;
         this.timeout = timeout;
         this.requests = new Map();
@@ -25,8 +24,6 @@ export class WebWorkerPool {
                 timer: null,
             });
         }
-
-        console.log(this.workers);
     }
 
     handleRequest({ code, id }) {
@@ -78,8 +75,6 @@ export class WebWorkerPool {
     // removes from idleWorkers set and starts job
     startJob(workerID, {code, id}) {
         this.workerToRequest.set(workerID, id);
-        console.log(workerID)
-        console.log(this.workers[workerID])
         this.workers[workerID] = {
             timer: setTimeout(() => { this.onWorkerTimeout(workerID) }, this.timeout),
             worker: this.workers[workerID].worker, 
@@ -100,15 +95,15 @@ export class WebWorkerPool {
     onWorkerTimeout(workerID) {
         //console.warn(`Timeout occurred for worker ${workerID}`)
         // terminate and reset web worker on suspected infinite loop
+        console.log(`Restarting worker ${workerID}`);
         this.workers[workerID].worker.terminate();
         this.workers[workerID].worker = new Worker('/py-runner.js');
-        console.log("Interesting")
         this.workers[workerID].worker.onmessage = (e) => {
             this.masterListener(workerID, e.data);
         }
 
         // resolve awaited output with timeout error message
-        this.requests.get(this.workerToRequest.get(workerID)).reject(`Timeout: Code took longer than ${this.timeout} seconds to complete`);
+        this.requests.get(this.workerToRequest.get(workerID)).reject(`Timeout: Code took longer than ${this.timeout} second(s) to complete`);
     }
 
 }
