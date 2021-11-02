@@ -69,7 +69,7 @@ export const ResultViewer = ({ module_id }) => {
 const MIN_SNAPSHOT_DELAY = 10;
 
 export const Module = ({ module, title, onSelectionChange, readonly, region }) => {
-  const request = useContext(CompilationRequestContext);
+  const { request, reset } = useContext(CompilationRequestContext);
   const [output, setOutput] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [busy, setBusy] = useState(true);
@@ -107,7 +107,6 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   }
 
   const onChange = (currentSnapshot) => {
-    console.log("onChange")
     let currentTime = new Date();
 
     // readonly means we are viewing past snapshot that we do not want to replace our current code
@@ -119,14 +118,14 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
           createdAt: currentTime,
         }
       });
+
+      compile(currentSnapshot);
+    
+      logSnapshot(currentTime, currentSnapshot); 
+
     }
 
-    compile(currentSnapshot);
-    
-    logSnapshot(currentTime, currentSnapshot);
-    
   }
-
   
   useEffect(() => {
     compile(module.code);
@@ -185,6 +184,8 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
         />
         
         {/* <ResultViewer module_id={module._id} /> */}
+        <button onClick={() => { reset(); compile(module.code); }}>Reset Python Environment</button>
+
         <div className="output">
           {busy ? "Compiling..." : output}
         </div>

@@ -3,6 +3,10 @@ export class WebWorkerPool {
     constructor(poolSize = 3, timeout = 1) {
         this.poolSize = poolSize;
         this.timeout = timeout;
+        this.reset();
+    }
+
+    reset() {
         this.requests = new Map();
         this.idleWorkers = new Set();
         this.workerToRequest = new Map();
@@ -74,9 +78,10 @@ export class WebWorkerPool {
     // assumes worker of workerID is idle
     // removes from idleWorkers set and starts job
     startJob(workerID, {code, id}) {
+        console.log(`Worker ${workerID} assigned job`);
         this.workerToRequest.set(workerID, id);
         this.workers[workerID] = {
-            timer: setTimeout(() => { this.onWorkerTimeout(workerID) }, this.timeout),
+            timer: setTimeout(() => { this.onWorkerTimeout(workerID) }, this.timeout*1000),
             worker: this.workers[workerID].worker, 
         }
 
@@ -95,7 +100,7 @@ export class WebWorkerPool {
     onWorkerTimeout(workerID) {
         //console.warn(`Timeout occurred for worker ${workerID}`)
         // terminate and reset web worker on suspected infinite loop
-        console.log(`Restarting worker ${workerID}`);
+        console.warn(`Timeout: Restarting worker ${workerID}`);
         this.workers[workerID].worker.terminate();
         this.workers[workerID].worker = new Worker('/py-runner.js');
         this.workers[workerID].worker.onmessage = (e) => {

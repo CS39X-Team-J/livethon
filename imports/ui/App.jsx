@@ -28,7 +28,12 @@ export const App = () => {
   }
 
   return (
-    <CompilationRequestContext.Provider value={ ({ code, id}) => { return pool.requestCompilation({ code, id }); } }>
+    <CompilationRequestContext.Provider value={
+      {
+        request: ({ code, id}) => { return pool.requestCompilation({ code, id }); },
+        reset: () => { pool.reset(); },
+      }  
+    }>
       <SessionContext.Provider value={{ session, setSession }}>
         { user ? (<Fragment><button onClick={logout}>Logout</button> Logged in as {user.username}</Fragment>) : "" }
         <div className="app">
