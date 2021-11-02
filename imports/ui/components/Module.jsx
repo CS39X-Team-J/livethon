@@ -82,7 +82,9 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
 
   const compile = async (script) => {
     try {
-        const results = await request({id: module._id, code: script});
+        const results = await request({ id: module._id, code: script });
+
+        console.log(results)
 
         // only set state when this component is mounted
         if (mounted.current) {
@@ -90,7 +92,7 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
         }
 
       } catch(error) {
-        console.warn(error)
+        console.warn(error);
       }
   }
 
@@ -103,6 +105,7 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
   }
 
   const onChange = (currentSnapshot) => {
+    console.log("onChange")
     let currentTime = new Date();
 
     // readonly means we are viewing past snapshot that we do not want to replace our current code
