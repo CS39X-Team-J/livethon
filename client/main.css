@@ -81,3 +81,15 @@ b {
   position: absolute;
   background-color: rgba(134, 247, 134, 150);
 }
+
+.sessionCreationForm {
+  display: inline-block;
+}
+
+.scf-entry {
+  margin: 5px;
+}
+
+.error-msg-body {
+  color: red
+}
