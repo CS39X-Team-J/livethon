@@ -1,10 +1,9 @@
-import React, { useContext, useState, Component } from "react";
+import React, { Component } from "react";
 import AceEditor from "react-ace";
 import { SessionsCollection } from "../../../api/modules";
 
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/mode-python";
-import { InstructorViewContext } from "./InstructorView";
 
 export class SessionCreationForm extends Component {
   constructor(props) {
@@ -64,7 +63,7 @@ export class SessionCreationForm extends Component {
   }
 
   submit(event) {
-    let state = this.state
+    let state = this.state;
     event.preventDefault();
     const isImport = state.sourceSelect.type === "import";
     const errorMsg = this.validate(state);
@@ -83,8 +82,9 @@ export class SessionCreationForm extends Component {
         },
         template,
       });
-      const { selectView } = useContext(InstructorViewContext);
-      selectView("submissions");
+
+      // TODO: implement routing to new session
+      //contextProvider("submissions");
     }
   }
 
@@ -234,3 +234,10 @@ export class SessionCreationForm extends Component {
     );
   }
 }
+
+// function contextProvider(Component) {
+//   return (props) => {
+//     const hook = useContext(InstructorViewContext);
+//     return <Component {...props} hook={hook} />;
+//   };
+// }
