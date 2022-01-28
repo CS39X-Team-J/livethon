@@ -58,12 +58,13 @@ export class SessionCreationForm extends Component {
   }
 
   validate(state) {
-    if (SessionsCollection.find({ name: state.fetch }).fetch().length > 0)
+    if (SessionsCollection.find({ name: state.name }).fetch().length > 0)
       return "Session name already taken";
     else return "";
   }
 
-  submit(event, state) {
+  submit(event) {
+    let state = this.state
     event.preventDefault();
     const isImport = state.sourceSelect.type === "import";
     const errorMsg = this.validate(state);
@@ -217,7 +218,7 @@ export class SessionCreationForm extends Component {
         </div>
         {this.state.errorMsg && (
           <div>
-            <p style="error-msg-body">{this.state.errorMsg}</p>
+            <p className="error-msg-body">{this.state.errorMsg}</p>
           </div>
         )}
         <label>
@@ -225,7 +226,7 @@ export class SessionCreationForm extends Component {
             type="submit"
             value="submit"
             onClick={(event) => {
-              this.submit(event, this.state);
+              this.submit(event);
             }}
           ></input>
         </label>
