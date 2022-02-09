@@ -12,10 +12,8 @@ async function loadPythonPackages(){
     pythonLoading = self.pyodide.loadPackage(['numpy', 'pytz']);
 }
 
-self.onmessage = async(event) => {
-    await languagePluginLoader;
-     // since loading package is asynchronous, we need to make sure loading is done:
-    await pythonLoading;
+const listener = async (event) => {
+    //self.postMessage(event.data);
     // Don't bother yet with this line, suppose our API is built in such a way:
     const {code, id} = event.data;
     // The worker copies the context in its own "memory" (an object mapping name to values)
@@ -37,10 +35,24 @@ self.onmessage = async(event) => {
         self.postMessage({
             results, stdout, id
         });
+        
+        
     }
     catch (error){
         self.postMessage(
             {error : error.message, id}
         );
     }
+
+    self.postMessage("ready");
+
 }
+
+const main = async () => {
+    await languagePluginLoader;
+    await pythonLoading;
+    self.postMessage("ready");
+    self.onmessage = listener;
+}
+
+main();
