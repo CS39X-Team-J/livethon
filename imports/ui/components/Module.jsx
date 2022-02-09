@@ -10,7 +10,7 @@ import "ace-builds/src-noconflict/theme-github";
 export const addStudentToSession = ({ session, user }) => {
   // only insert into modules collection, since we don't care about starter code in the snapshot collection
   ModulesCollection.insert({ 
-    code: "# Type your solution here",
+    code: getSessionData({ session }).template,
     createdAt: new Date(),
     user,
     session,
@@ -27,6 +27,10 @@ export const addStudentToSession = ({ session, user }) => {
 
 export const getStudentsBySession = ({ session }) => {
   return SessionsCollection.findOne({ name: session }).users;
+}
+
+export const getSessionData = ({ session }) => {
+  return SessionsCollection.findOne({ name: session });
 }
 
 export const createSnapshot = ({ module, code, output, date }) => {
