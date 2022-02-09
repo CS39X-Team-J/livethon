@@ -1,54 +1,38 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import AceEditor from "react-ace";
 import { SessionsCollection } from "../../../api/modules";
 
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/mode-python";
 
-export class SessionCreationForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      errorMsg: "",
-      name: "",
-      title: "",
-      description: "",
-      sourceSelect: {
-        fileSelection: "",
-        type: "create",
-        importText: undefined,
-        editorText: "",
-      },
-    };
+export const SessionCreationForm = ({}) => {
+  const [sessionData, setSessionData] = useState({
+    errorMsg: "",
+    name: "",
+    title: "",
+    description: "",
+    sourceSelect: {
+      fileSelection: "",
+      type: "create",
+      importText: undefined,
+      editorText: "",
+    },
+  });
 
-    this.handleEditorChange = this.handleEditorChange.bind(this);
-    this.handleSourceChange = this.handleSourceChange.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleImport = this.handleImport.bind(this);
+  const handleEditorChange = (text) => {
+    setSessionData({...sessionData, sourceSelect: {...sessionData.sourceSelect, editorText: text}});
   }
 
-  handleEditorChange(text) {
-    this.setState((state) => {
-      return {
-        sourceSelect: { ...state.sourceSelect, editorText: text },
-      };
-    });
-  }
-
-  handleSourceChange(event) {
+  const handleSourceChange = (event) => {
     const target = event.target;
     const name = target.name;
-    this.setState((state) => {
-      return { sourceSelect: { ...state.sourceSelect, [name]: target.value } };
-    });
+    setSessionData({...sessionData, [name]: target.value});
   }
 
-  handleChange(event) {
+  const handleChange = (event) => {
     const target = event.target;
     if (target.name !== "sourceSelect")
-      this.setState({
-        [target.name]: target.value,
-      });
+      setSessionData({...sessionData, [target.name]: target.value });
     else {
       throw new Error(
         "Invalid state update: `handleChange` cannot update sourceSelect or nested data."
@@ -56,31 +40,33 @@ export class SessionCreationForm extends Component {
     }
   }
 
-  validate(state) {
+  const validate = (state) => {
     if (SessionsCollection.find({ name: state.name }).fetch().length > 0)
       return "Session name already taken";
     else return "";
   }
 
-  submit(event) {
-    let state = this.state;
+  const submit = (event) => {
+    // let state = this.state;
     event.preventDefault();
-    const isImport = state.sourceSelect.type === "import";
-    const errorMsg = this.validate(state);
+    const isImport = sessionData.sourceSelect.type === "import";
+    const errorMsg = validate(sessionData);
+
+    setSessionData({...sessionData, errorMsg: errorMsg ? errorMsg : "" });
     if (errorMsg) {
-      this.setState({ errorMsg });
+      //setSessionData({...sessionData, errorMsg: errorMsg});
     } else {
-      this.setState({ errorMsg: "" });
       const template = isImport
-        ? state.sourceSelect.importText
-        : state.sourceSelect.editorText;
+        ? sessionData.sourceSelect.importText
+        : sessionData.sourceSelect.editorText;
       SessionsCollection.insert({
-        name: state.name,
+        name: sessionData.name,
         instructions: {
-          title: state.title,
-          description: state.description,
+          title: sessionData.title,
+          description: sessionData.description,
         },
         template,
+        users: [],
       });
 
       // TODO: implement routing to new session
@@ -88,21 +74,17 @@ export class SessionCreationForm extends Component {
     }
   }
 
-  handleImport(importEvent) {
+  const handleImport = (importEvent) => {
     let fileReader = new FileReader();
     fileReader.onload = (loadEvent) => {
       const text = loadEvent.target.result;
       console.log(text);
-      this.setState((state) => {
-        return {
-          sourceSelect: { ...state.sourceSelect, importText: text },
-        };
-      });
+      setSessionData({...sessionData, sourceSelect: { ...sessionData.sourceSelect, importText: text }});
     };
     fileReader.readAsText(importEvent.target.files[0], "UTF-8");
   }
 
-  render() {
+
     return (
       <form className="sessionCreationForm">
         <h1>New session</h1>
@@ -112,8 +94,8 @@ export class SessionCreationForm extends Component {
             <input
               type="text"
               name="name"
-              value={this.state.name}
-              onChange={this.handleChange}
+              value={sessionData.name}
+              onChange={handleChange}
             ></input>
           </label>
         </div>
@@ -123,8 +105,8 @@ export class SessionCreationForm extends Component {
             <input
               type="text"
               name="title"
-              value={this.state.title}
-              onChange={this.handleChange}
+              value={sessionData.title}
+              onChange={handleChange}
             ></input>
           </label>
         </div>
@@ -136,8 +118,8 @@ export class SessionCreationForm extends Component {
             <textarea
               type="text"
               name="description"
-              value={this.state.description}
-              onChange={this.handleChange}
+              value={sessionData.description}
+              onChange={handleChange}
             ></textarea>
           </label>
         </div>
@@ -149,8 +131,8 @@ export class SessionCreationForm extends Component {
                 type="radio"
                 name="type"
                 value="create"
-                checked={this.state.sourceSelect.type === "create"}
-                onChange={this.handleSourceChange}
+                checked={sessionData.sourceSelect.type === "create"}
+                onChange={handleSourceChange}
               ></input>
               Write a new template
             </label>
@@ -159,8 +141,8 @@ export class SessionCreationForm extends Component {
                 type="radio"
                 name="type"
                 value="import"
-                checked={this.state.sourceSelect.type === "import"}
-                onChange={this.handleSourceChange}
+                checked={sessionData.sourceSelect.type === "import"}
+                onChange={handleSourceChange}
               ></input>
               Import a template
             </label>
@@ -172,7 +154,7 @@ export class SessionCreationForm extends Component {
             </div>
           </div>
           <div className="template-entry">
-            {this.state.sourceSelect.type === "create" ? (
+            {sessionData.sourceSelect.type === "create" ? (
               <AceEditor
                 mode="python"
                 theme="github"
@@ -183,14 +165,14 @@ export class SessionCreationForm extends Component {
                 highlightActiveLine={false}
                 height="300px"
                 width="400px"
-                value={this.state.sourceSelect.editorText}
-                onChange={this.handleEditorChange}
+                value={sessionData.sourceSelect.editorText}
+                onChange={handleEditorChange}
                 debounceChangePeriod={1000}
                 editorProps={{ $blockScrolling: true }}
               />
             ) : (
               <div>
-                {this.state.sourceSelect.importText != undefined && (
+                {sessionData.sourceSelect.importText != undefined && (
                   <AceEditor
                     mode="python"
                     theme="github"
@@ -201,7 +183,7 @@ export class SessionCreationForm extends Component {
                     highlightActiveLine={false}
                     height="300px"
                     width="400px"
-                    value={this.state.sourceSelect.importText}
+                    value={sessionData.sourceSelect.importText}
                     readOnly={true}
                     editorProps={{ $blockScrolling: true }}
                   />
@@ -216,9 +198,9 @@ export class SessionCreationForm extends Component {
             )}
           </div>
         </div>
-        {this.state.errorMsg && (
+        {sessionData.errorMsg && (
           <div>
-            <p className="error-msg-body">{this.state.errorMsg}</p>
+            <p className="error-msg-body">{sessionData.errorMsg}</p>
           </div>
         )}
         <label>
@@ -226,18 +208,10 @@ export class SessionCreationForm extends Component {
             type="submit"
             value="submit"
             onClick={(event) => {
-              this.submit(event);
+              submit(event);
             }}
           ></input>
         </label>
       </form>
     );
   }
-}
-
-// function contextProvider(Component) {
-//   return (props) => {
-//     const hook = useContext(InstructorViewContext);
-//     return <Component {...props} hook={hook} />;
-//   };
-// }
