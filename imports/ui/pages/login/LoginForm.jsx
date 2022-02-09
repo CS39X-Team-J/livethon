@@ -1,17 +1,23 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Accounts } from 'meteor/accounts-base';
 import { SessionContext } from '../../App';
 import { SessionsCollection } from '../../../api/modules';
+import { useNavigate } from 'react-router-dom';
 
 export const LoginForm = () => {
   const { session, setSession } = useContext(SessionContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isStudent, setIsStudent] = useState(true);
+  let navigate = useNavigate();
 
   const sessionExists = () => {
     return SessionsCollection.find({ name: session }).fetch().length > 0;
+  }
+
+  const navigateTo = (path) => {
+    navigate(path)
   }
 
   const submit = e => {
@@ -28,6 +34,7 @@ export const LoginForm = () => {
             password: "password"
           });
           Meteor.loginWithPassword(username, "password");
+          navigateTo("student")
         });
       }
       
@@ -45,6 +52,7 @@ export const LoginForm = () => {
       }
 
       Meteor.loginWithPassword(username, password);
+      navigateTo("instructor")
     }
   
   };
