@@ -2,14 +2,14 @@ import { Fragment } from "react";
 import { Routes, useNavigate, Route } from "react-router-dom";
 import React from "react";
 import { useTracker } from "meteor/react-meteor-data";
-import { Meteor } from 'meteor/meteor';
+import { Meteor } from "meteor/meteor";
 import { InstructorView } from "../pages/instructor/InstructorView";
 import { StudentView } from "../pages/student/StudentView";
+import { SessionCreationForm } from "../pages/instructor/SessionCreateForm";
 
 export function UserFrame() {
-    const user = useTracker(() => Meteor.user());
-    let navigate = useNavigate();
-
+  const user = useTracker(() => Meteor.user());
+  let navigate = useNavigate();
 
   return (
     <Fragment>
@@ -25,11 +25,16 @@ export function UserFrame() {
         Logged in as {user?.username}
       </div>
       <Routes>
-              <Route
-                path="instructor"
-                element={<InstructorView></InstructorView>}
-              />
-              <Route path="student" element={<StudentView></StudentView>} />
+        <Route
+          exact
+          path="instructor"
+          element={<InstructorView></InstructorView>}
+        />
+        <Route
+          path="instructor/create"
+          element={<SessionCreationForm></SessionCreationForm>}
+        />
+        <Route path="student" element={<StudentView></StudentView>} />
       </Routes>
     </Fragment>
   );

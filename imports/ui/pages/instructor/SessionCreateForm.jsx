@@ -1,9 +1,11 @@
-import React, { Component, useState } from "react";
+import React, { Component, useContext, useState } from "react";
 import AceEditor from "react-ace";
 import { SessionsCollection } from "../../../api/modules";
 
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/mode-python";
+import { useNavigate } from "react-router-dom";
+import { SessionContext } from "../../App";
 
 export const SessionCreationForm = ({}) => {
   const [sessionData, setSessionData] = useState({
@@ -18,6 +20,8 @@ export const SessionCreationForm = ({}) => {
       editorText: "",
     },
   });
+  let navigate = useNavigate();
+  const {session, setSession } = useContext(SessionContext);
 
   const handleEditorChange = (text) => {
     setSessionData({...sessionData, sourceSelect: {...sessionData.sourceSelect, editorText: text}});
@@ -27,6 +31,10 @@ export const SessionCreationForm = ({}) => {
     const target = event.target;
     const name = target.name;
     setSessionData({...sessionData, [name]: target.value});
+  }
+
+  const navigateTo = (path) => {
+    navigate(path)
   }
 
   const handleChange = (event) => {
@@ -54,6 +62,7 @@ export const SessionCreationForm = ({}) => {
 
     setSessionData({...sessionData, errorMsg});
     if (!errorMsg) {
+      setSession(sessionData.name);
       const template = isImport
         ? sessionData.sourceSelect.importText
         : sessionData.sourceSelect.editorText;
@@ -66,9 +75,7 @@ export const SessionCreationForm = ({}) => {
         template,
         users: [],
       });
-
-      // TODO: implement routing to new session
-      //contextProvider("submissions");
+      navigateTo('/instuctor/');
     }
   }
 
