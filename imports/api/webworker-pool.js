@@ -18,7 +18,7 @@ export class WebWorkerPool {
         this.workers = [];
         for (let index = 0; index < this.poolSize; index++) {
             let worker = new Worker('/py-runner.js');
-
+            
             worker.onmessage = (e) => {
                 this.masterListener(index, e.data);
             }

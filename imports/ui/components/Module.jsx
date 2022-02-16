@@ -10,7 +10,7 @@ import "ace-builds/src-noconflict/theme-github";
 export const addStudentToSession = ({ session, user }) => {
   // only insert into modules collection, since we don't care about starter code in the snapshot collection
   ModulesCollection.insert({ 
-    code: getSessionData({ session }).template,
+    code: "# Type your solution here",
     createdAt: new Date(),
     user,
     session,
@@ -27,10 +27,6 @@ export const addStudentToSession = ({ session, user }) => {
 
 export const getStudentsBySession = ({ session }) => {
   return SessionsCollection.findOne({ name: session }).users;
-}
-
-export const getSessionData = ({ session }) => {
-  return SessionsCollection.findOne({ name: session });
 }
 
 export const createSnapshot = ({ module, code, output, date }) => {
@@ -73,9 +69,10 @@ export const ResultViewer = ({ module_id }) => {
 const MIN_SNAPSHOT_DELAY = 10;
 
 export const Module = ({ module, title, onSelectionChange, readonly, region }) => {
-  const request = useContext(CompilationRequestContext);
+  const { request, reset } = useContext(CompilationRequestContext);
   const [output, setOutput] = useState(null);
   const [markers, setMarkers] = useState([]);
+  const [busy, setBusy] = useState(true);
 
   // https://stackoverflow.com/questions/57624060/how-can-i-check-if-the-component-is-unmounted-in-a-functional-component
   const mounted = useRef(false);
@@ -86,7 +83,9 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
 
   const compile = async (script) => {
     try {
-        const results = await request({id: module._id, code: script});
+        setBusy(true);
+        const results = await request({ id: module._id, code: script });
+        setBusy(false);
 
         // only set state when this component is mounted
         if (mounted.current) {
@@ -94,7 +93,8 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
         }
 
       } catch(error) {
-        console.warn(error)
+        setBusy(false);
+        setOutput(error);
       }
   }
 
@@ -118,14 +118,14 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
           createdAt: currentTime,
         }
       });
+
+      compile(currentSnapshot);
+    
+      logSnapshot(currentTime, currentSnapshot); 
+
     }
 
-    compile(currentSnapshot);
-    
-    logSnapshot(currentTime, currentSnapshot);
-    
   }
-
   
   useEffect(() => {
     compile(module.code);
@@ -184,8 +184,10 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
         />
         
         {/* <ResultViewer module_id={module._id} /> */}
+        <button onClick={() => { reset(); compile(module.code); }}>Reset Python Environment</button>
+
         <div className="output">
-          {output}
+          {busy ? "Compiling..." : output}
         </div>
 
     </div>
