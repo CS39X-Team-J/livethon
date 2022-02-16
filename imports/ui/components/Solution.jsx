@@ -34,7 +34,7 @@ export const Solution = ({ module }) => {
   return (
     <div key={module._id}>
       <div className="module-container">
-        <h3>{module.user.username}</h3>
+        <h3>{module?.user?.username}</h3>
 
         <AceEditor
           mode="python"
