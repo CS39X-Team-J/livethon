@@ -25,6 +25,10 @@ export const addStudentToSession = ({ session, user }) => {
   }
 }
 
+export const getSession = ({ session }) => {
+  return SessionsCollection.findOne({name: session});
+}
+
 export const getStudentsBySession = ({ session }) => {
   return SessionsCollection.findOne({ name: session }).users;
 }

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { useState, useContext } from "react";
-import { Module, addStudentToSession, getCodeByStudentSession, getSessionData } from "../../components/Module.jsx";
+import { Module, addStudentToSession, getCodeByStudentSession, getSession } from "../../components/Module.jsx";
 import { Feedback } from "../../components/Feedback.jsx";
 import { useTracker } from 'meteor/react-meteor-data';
 import { SessionContext } from '../../App.jsx';
@@ -9,7 +9,7 @@ import { SnapshotsCollection, FeedbackCollection } from '../../../api/modules.js
 export const StudentView = () => {
   const user = useTracker(() => Meteor.user());
   const { session } = useContext(SessionContext);
-  const sessionData = useTracker(() => getSessionData({ session }));
+  const sessionData = useTracker(() => getSession({ session }));
   const [currentFocus, setFocus] = useState("CURRENT");
 
   const module = useTracker(() => {
