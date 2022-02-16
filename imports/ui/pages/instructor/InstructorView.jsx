@@ -1,19 +1,26 @@
-import React, { createContext, useState } from "react";
-import { SessionCreationForm } from "./SessionCreateForm.jsx";
-import { SubmissionsView } from "./SubmissionsView.jsx";
-
-export const InstructorViewContext = createContext("create session");
+import React, { useContext } from "react";
+import { getCodeBySession } from "../../components/Module.jsx";
+import { useTracker } from "meteor/react-meteor-data";
+import { Solution } from "../../components/Solution.jsx";
+import { SessionContext } from "../../App.jsx";
 
 export const InstructorView = () => {
-  const [selectedView, selectView] = useState('create session')
-  const selection = {
-    'submissions': <SubmissionsView></SubmissionsView>,
-    'create session': <SessionCreationForm></SessionCreationForm>
-  }
+  const user = useTracker(() => Meteor.user());
+  const { session, setSession } = useContext(SessionContext);
+
+  const modules = useTracker(() => {
+    return getCodeBySession({ session });
+  });
 
   return (
-    <InstructorViewContext.Provider value={{selectedView, selectView}}>
-      {selection[selectedView]}
-    </InstructorViewContext.Provider>
+
+    <div className="InstructorView">
+      <h1>{ session }</h1>
+        {modules.map((module) => {
+          return (
+            <Solution module={module} key={module._id}></Solution>
+          );
+        })}
+    </div>
   );
 };

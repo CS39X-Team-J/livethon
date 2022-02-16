@@ -17,8 +17,6 @@ export const StudentView = () => {
     if (!code) {
       addStudentToSession({ session, user });
     }
-    console.log(session)
-    console.log(sessionData)
     return getCodeByStudentSession({ session, user });
   });
 

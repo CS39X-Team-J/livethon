@@ -52,10 +52,8 @@ export const SessionCreationForm = ({}) => {
     const isImport = sessionData.sourceSelect.type === "import";
     const errorMsg = validate(sessionData);
 
-    setSessionData({...sessionData, errorMsg: errorMsg ? errorMsg : "" });
-    if (errorMsg) {
-      //setSessionData({...sessionData, errorMsg: errorMsg});
-    } else {
+    setSessionData({...sessionData, errorMsg});
+    if (!errorMsg) {
       const template = isImport
         ? sessionData.sourceSelect.importText
         : sessionData.sourceSelect.editorText;
@@ -78,7 +76,6 @@ export const SessionCreationForm = ({}) => {
     let fileReader = new FileReader();
     fileReader.onload = (loadEvent) => {
       const text = loadEvent.target.result;
-      console.log(text);
       setSessionData({...sessionData, sourceSelect: { ...sessionData.sourceSelect, importText: text }});
     };
     fileReader.readAsText(importEvent.target.files[0], "UTF-8");
@@ -142,7 +139,7 @@ export const SessionCreationForm = ({}) => {
                 name="type"
                 value="import"
                 checked={sessionData.sourceSelect.type === "import"}
-                onChange={handleSourceChange}
+                onChange={handleImport}
               ></input>
               Import a template
             </label>

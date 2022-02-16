@@ -18,7 +18,6 @@ export const LoginForm = () => {
     e.preventDefault();
     // students can sign in with any name
     if (isStudent) {
-      console.log(`Current Session: ${session}`)
       if (!sessionExists()) {
         alert("Given session does not exist. Please try again!");
       } else {

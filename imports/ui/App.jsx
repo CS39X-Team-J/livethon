@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useState, Fragment, useEffect } from "react";
+import React, { useState, Fragment } from "react";
 import { useTracker } from 'meteor/react-meteor-data';
-import { LoginForm } from './pages/login/LoginForm.jsx';
 import { StudentView } from './pages/student/StudentView.jsx';
 import { InstructorView } from './pages/instructor/InstructorView.jsx';
 import { createContext } from 'react';
