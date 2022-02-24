@@ -1,27 +1,41 @@
-import { FeedbackCollection } from "../../api/modules";
+import { FeedbackCollection, RunsCollection } from "../../api/modules";
+import { useTracker } from 'meteor/react-meteor-data';
 import { ResultViewer } from "./Module";
 import React, { useState, useContext } from "react";
 import { SessionContext } from "../App";
-import { getSnapshotByStudentSessionDate } from "./Module";
+import { getSnapshotByStudentSessionDate, createSnapshot } from "./Module";
 import AceEditor from "react-ace";
+
 export const Solution = ({ module }) => {
   const [feedback, setFeedback] = useState("");
   const [selection, setSelection] = useState(null);
-
   const { session } = useContext(SessionContext);
 
-  const snap = getSnapshotByStudentSessionDate({
-    user: module.user,
-    session,
-    date: module.createdAt,
+  const currentSnapshot = useTracker(() => {
+    return getSnapshotByStudentSessionDate({
+      user: module.user,
+      session,
+      date: module.createdAt,
+    });
+  });
+
+  const run = useTracker(() => {
+    return RunsCollection.findOne({ module: module._id }, { sort: {createdAt: -1}});
   });
 
   const submitFeedback = () => {
     // check if snapshot of current code exists,
     // if not, create it and reference it in feedback collection
-    let snapshotID;
+    let snapshotID = currentSnapshot?._id;
+    if (!currentSnapshot) {
+      snapshotID = createSnapshot({ 
+        module, 
+        code: module.code,
+        date: module.createdAt,
+      })
+    }
 
-    snapshotID = snap?._id;
+    console.log()
 
     FeedbackCollection.insert({
       body: feedback,
@@ -29,6 +43,7 @@ export const Solution = ({ module }) => {
       snapshot: snapshotID,
       region: selection ? selection.getAllRanges() : [],
     });
+
   };
 
   return (
