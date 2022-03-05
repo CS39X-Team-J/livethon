@@ -2,66 +2,47 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-github";
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { CompilationRequestContext } from '../App';
-import { compile, logSnapshot } from '../services/CodeSnapshot';
+import { execute } from '../services/CodeSnapshot';
 import { ResultViewer } from "./ResultViewer";
-import { ModulesCollection, RunsCollection } from "../../api/modules";
-
+import { updateModule } from "../../api/methods/updateModule";
+import { createSnapshot } from "../../api/methods/createSnapshot";
+import { useParams } from "react-router-dom";
 
 export const Module = ({ module, title, onSelectionChange, readonly, region }) => {
   const { request, reset } = useContext(CompilationRequestContext);
-  const [markers, setMarkers] = useState([]);
+  const params = useParams();
 
   const onChange = async (currentSnapshot) => {
     
     let createdAt = new Date();
 
-    // readonly means we are viewing past snapshot that we do not want to replace our current code
-    // if currentSnapshot is the same as the module.code and onChange is called, 
+    // 1. readonly means we are viewing past snapshots that we do not want to replace our current code
+    // 2. if currentSnapshot is the same as the module.code and onChange is called, 
     // then we have a duplicate trigger of onChange and do nothing
-    if (currentSnapshot != module.code) {
-      const output = await compile(module, currentSnapshot, request);
-      
-      RunsCollection.insert({
-        module: module._id,
-        input: "",
+    if (currentSnapshot != module.code && !readonly) {
+
+      updateModule.call({
+        moduleID: module._id,
+        code: currentSnapshot,
+        createdAt,          
+      });
+
+      const output = await execute(module._id, currentSnapshot, request, createdAt);
+
+      console.log(output)
+
+      createSnapshot.call({
+        code: currentSnapshot,
         output,
+        session: params.session,
+        user: module.user,
         createdAt,
       });
 
-      // if code isn't readonly (actually own student code)
-      // update modules collection and logSnapshot
-      if (!readonly) {
-        ModulesCollection.update(module._id, {
-          $set: {
-            code: currentSnapshot,
-            createdAt,
-          }
-        });
-
-        logSnapshot(module, createdAt, currentSnapshot, output);
-      }
     }
   }
-
-  // compile on page load
-  useEffect(() => {
-    compile(module, module.code, request);
-  }, []);
-
-  useEffect(() => {
-    setMarkers(region.map(r => {
-      return {
-        startRow: r.start.row,
-        startCol: r.start.column,
-        endRow: r.end.row,
-        endCol: r.end.column,
-        className: 'error-marker',
-        type: 'text',
-      }
-    }))
-  }, [region]);
 
   return (
     <div className="module-container">
@@ -82,7 +63,16 @@ export const Module = ({ module, title, onSelectionChange, readonly, region }) =
           name={module._id}
           editorProps={{ $blockScrolling: true }}
           value={module.code}
-          markers={markers}
+          markers={region.map(r => {
+            return {
+              startRow: r.start.row,
+              startCol: r.start.column,
+              endRow: r.end.row,
+              endCol: r.end.column,
+              className: 'error-marker',
+              type: 'text',
+            }
+          })}
         />
 
         <button onClick={() => { reset(); compile(module, module.code, request); }}>Reset Python Environment</button>

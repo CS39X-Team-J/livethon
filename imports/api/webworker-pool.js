@@ -69,6 +69,7 @@ export class WebWorkerPool {
             }
 
         } else if (message.id != undefined) {
+            console.log(message)
             // python output is returned, resolve appropriate promise
             this.requests.get(message.id).resolve(message);
             clearTimeout(this.workers[workerID].timer);

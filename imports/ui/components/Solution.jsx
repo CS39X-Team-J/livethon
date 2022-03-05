@@ -1,26 +1,26 @@
 import { FeedbackCollection, RunsCollection } from "../../api/modules";
 import { useTracker } from 'meteor/react-meteor-data';
-import { ResultViewer } from "./Module";
-import React, { useState, useContext } from "react";
-import { SessionContext } from "../App";
-import { getSnapshotByStudentSessionDate, createSnapshot } from "./Module";
+import React, { useState } from "react";
 import AceEditor from "react-ace";
+import { useParams } from "react-router-dom";
+import { createSnapshot, getSnapshotByStudentSessionDate } from "../services/CodeSnapshot";
+import { ResultViewer } from "./ResultViewer";
 
 export const Solution = ({ module }) => {
   const [feedback, setFeedback] = useState("");
   const [selection, setSelection] = useState(null);
-  const { session } = useContext(SessionContext);
+  const params = useParams();
 
   const currentSnapshot = useTracker(() => {
     return getSnapshotByStudentSessionDate({
       user: module.user,
-      session,
+      session: params.session,
       date: module.createdAt,
     });
   });
 
   const run = useTracker(() => {
-    return RunsCollection.findOne({ module: module._id }, { sort: {createdAt: -1}});
+    return RunsCollection.findOne({ module: module._id }, { sort: { createdAt: -1 }});
   });
 
   const submitFeedback = () => {
@@ -34,8 +34,6 @@ export const Solution = ({ module }) => {
         date: module.createdAt,
       })
     }
-
-    console.log()
 
     FeedbackCollection.insert({
       body: feedback,
@@ -70,7 +68,7 @@ export const Solution = ({ module }) => {
           value={module.code}
         />
 
-        <ResultViewer className="cool" module_id={module._id} />
+        <ResultViewer module={module} />
       </div>
       <input onInput={(e) => setFeedback(e.target.value)} />
       <button onClick={submitFeedback}>Submit</button>

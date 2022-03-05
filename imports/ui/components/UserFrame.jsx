@@ -27,14 +27,14 @@ export function UserFrame() {
       <Routes>
         <Route
           exact
-          path="instructor"
+          path="instructor/session/:session/view"
           element={<InstructorView></InstructorView>}
         />
         <Route
-          path="instructor/create"
+          path="instructor/session/create"
           element={<SessionCreationForm></SessionCreationForm>}
         />
-        <Route path="student" element={<StudentView></StudentView>} />
+        <Route path="student/session/:session" element={<StudentView></StudentView>} />
       </Routes>
     </Fragment>
   );

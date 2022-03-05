@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import React, { useState, createContext } from "react";
+import React, { createContext } from "react";
 import { LoginForm } from "./pages/login/LoginForm.jsx";
 import {
   Route,
@@ -9,19 +9,17 @@ import { UserFrame } from "./components/UserFrame.jsx";
 import { WebWorkerPool } from '../api/webworker-pool.js';
 
 export const CompilationRequestContext = createContext();
-export const SessionContext = createContext();
 
+// create a pyodide webworker pool with 3 threads and 1 second timeout
 const pool = new WebWorkerPool(3, 1);
 
 export const App = () => {
-  const [session, setSession] = useState("lab01");
 
   // This map will be used to coordinate which promises to resolve from window.onmessage
   // Previously, window.onmessage was set to the latest compilation request
   // When multiple compile requests were sent around the same time,
   // sometimes only the most recent one seemed to run, since the value of window.onmessage for prior
   // requests were overwritten by newer requests before the older requests are processed.
-  const [compilations, setCompilations] = useState(new Map());
 
   const logout = () => {
     Meteor.logout();
@@ -34,14 +32,12 @@ export const App = () => {
         reset: () => { pool.reset(); },
       }  
     }>
-      <SessionContext.Provider value={{ session, setSession }}>
-        <div className="app">
-            <Routes>
-              <Route exact path="/" element={<LoginForm/>} />
-              <Route path="/*" element={<UserFrame/>}></Route>
-            </Routes>
-        </div>
-      </SessionContext.Provider>
+      <div className="app">
+          <Routes>
+            <Route exact path="/" element={<LoginForm/>} />
+            <Route path="/*" element={<UserFrame/>}></Route>
+          </Routes>
+      </div>
     </CompilationRequestContext.Provider>
   );
 };
