@@ -2,13 +2,11 @@ import React from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { RunsCollection } from '../../api/modules';
 
-export const ResultViewer = ({ module }) => {
+export const ResultViewer = ({ moduleID, createdAt }) => {
     
     const run = useTracker(() => {
-        const subscription = Meteor.subscribe('runs')
-        if (subscription.ready()) {
-            return RunsCollection.findOne({ module: module._id, createdAt: module.createdAt });
-        }        
+        Meteor.subscribe('runs');
+        return RunsCollection.findOne({ module: moduleID, createdAt: createdAt });
     });
 
     return <div className="output">

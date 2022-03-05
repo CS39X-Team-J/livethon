@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
-import { FeedbackCollection } from '../modules';
+import { FeedbackCollection, ModulesCollection } from '../modules';
 import { Roles } from 'meteor/alanning:roles';
 
 export const createFeedback = {
@@ -8,36 +8,37 @@ export const createFeedback = {
 
   // Factor out validation so that it can be run independently (1)
   validate(args) {
-    new SimpleSchema({
-      moduleID: { type: String },
-      message: { type: String },
-      snapshot: { type: String },
-      selectedRegions: { type: Array },
-      createdAt: { type: Date },
-    }).validate(args)
+    // TODO: fix schema to validate highlighted regions
+    // new SimpleSchema({
+    //   moduleID: { type: String },
+    //   message: { type: String },
+    //   snapshot: { type: String },
+    //   createdAt: { type: Date },
+    // }).validate(args)
   },
 
   // Factor out Method body so that it can be called independently (3)
-  run({ moduleID, message, snapshot, selectedRegions, createdAt }) {
+  run({ body, moduleID, snapshotID, selectedRegions, createdAt }) {
     const module = ModulesCollection.findOne({ _id: moduleID });
 
-    if (!Roles.userIsInRole(this.userID, 'instructor')) {
-        throw new Meteor.Error('feedback.create.unauthorized',
-        'Cannot create feedback without role instructor');
+    if (!Roles.userIsInRole(this.userId, 'instructor')) {
+      throw new Meteor.Error('run.create.unauthorized',
+        'Cannot create snapshot that is not yours');
     }
 
     if (!module) {
-        throw new Meteor.Error('feedback.create.module_not_found',
-        'Cannot give feedback to non-existent module');
+      throw new Meteor.Error('feedback.create.module_not_found',
+      'Cannot give feedback to non-existent module');
     }
 
     FeedbackCollection.insert({
-        body: message,
-        module: moduleID, // TODO: is this necessary when snapshot is provided?
-        snapshot,
-        region: selectedRegions ? selectedRegions : [],
-        createdAt,
+      body: body,
+      module: moduleID, // TODO: is this necessary when snapshot is provided?
+      snapshot: snapshotID,
+      region: selectedRegions,
+      createdAt,
     })
+
   },
 
   // Call Method by referencing the JS object (4)
@@ -53,5 +54,11 @@ export const createFeedback = {
     Meteor.apply(this.name, [args], options, callback);
   }
 };
+
+
+
+
+
+
 
 

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Module } from "../../components/Module.jsx";
 import { Feedback } from "../../components/Feedback.jsx";
 import { useTracker } from 'meteor/react-meteor-data';
@@ -11,12 +11,56 @@ import { createModule } from '../../../api/methods/createModule.js';
 import { createRun } from '../../../api/methods/createRun.js';
 import { execute } from '../../services/CodeSnapshot.js';
 import { CompilationRequestContext } from '../../App.jsx';
+import { updateModule } from '../../../api/methods/updateModule.js';
+import { createSnapshot } from '../../../api/methods/createSnapshot.js';
 
 export const StudentView = () => {
   const params = useParams();
   const user = Meteor.user();
-  const [currentFocus, setFocus] = useState("CURRENT");
+  const [currentFocus, setFocus] = useState("module");
   const { request, reset } = useContext(CompilationRequestContext);
+
+  const { snapshot, feedback } = useTracker(() => {
+    Meteor.subscribe('snapshots');
+    Meteor.subscribe('feedback');
+    
+    feedbackData = FeedbackCollection.findOne({ _id: currentFocus });
+    snapshotData = SnapshotsCollection.findOne({ _id: feedbackData?.snapshot });
+
+    return {
+      snapshot: snapshotData,
+      feedback: feedbackData,
+    }
+    
+  });
+
+  const onChange = async (currentCode) => {
+    
+    let createdAt = new Date();
+
+    // only update module and create snapshots if user is working with current code and has made a change
+    if (currentFocus == "module" && currentCode != module.code) {
+
+      updateModule.call({
+        moduleID: module._id,
+        code: currentCode,
+        createdAt,          
+      });
+
+      // TODO: restrict snapshot frequency
+      createSnapshot.call({
+        code: currentCode,
+        session: params.session,
+        user: module.user,
+        createdAt,
+      });    
+
+      // execute code and add output to runs collection
+      await execute(module._id, currentCode, request, createdAt);
+      
+    }
+
+  }
 
   // get module for student in this session
   // if student has no module for this session, that means the user is joining for the first time
@@ -29,8 +73,8 @@ export const StudentView = () => {
     const sessionData = SessionsCollection.findOne({ name: params.session });
     const moduleData = sessionData ? ModulesCollection.findOne({ session: sessionData.name, user: user._id }) : undefined;
 
-    // when sessions subscription is ready
-    if (sessionSubscription.ready()) {
+    // when sessions subscription is ready, we are guaranteed to get actual results from queries
+    if (sessionSubscription.ready() && moduleSubscription.ready()) {
 
       // check if session exists
       if (sessionData == undefined) {
@@ -38,36 +82,30 @@ export const StudentView = () => {
       }
   
       // if user is not in session, add to session and create module
-      if (!SessionsCollection.findOne({ name: sessionData.name, users: { $in: [user._id] }}) ) {
+      if (!SessionsCollection.findOne({ name: sessionData.name, users: { $in: [user._id] }})) {
+        
+        // add user to session
         addSessionUser.call({
           session: sessionData.name,
           user: user._id,
-        }, (err, res) => {
-          if (err) {
-            alert(err);
-          } else {
-            // success!
-            console.log("User successfully added to session!");
-          }
         });
   
-        // create module
-        const moduleID = createModule.call({
+        // create module and then create first run
+        createModule.call({
           code: sessionData.template ? sessionData.template : '',
           createdAt,
           user: user._id,
           session: sessionData.name,
         }, (err, res) => {
-          if (err) {
-            alert(err);
-          } else {
+          if (!err) {
             console.log("Module successfully created!");
+            const mod = ModulesCollection.findOne({ session: sessionData.name, user: user._id });
+            execute(mod._id, sessionData.template, request, mod.createdAt); 
+          } else {
+            alert(err);
           }
         });
-  
-        // execute template code
-        execute(moduleID, sessionData.template, request, createdAt);
-  
+
       }
     }
 
@@ -79,16 +117,11 @@ export const StudentView = () => {
   });
 
   const focusFeedback = (id) => () => {
-    const feedback = FeedbackCollection.findOne({ _id: id });
-    setFocus({
-      // prevent crashing when snapshot not found
-      snapshot: SnapshotsCollection.findOne({ _id: feedback.snapshot}) || {},
-      feedback,
-    });
+    setFocus(id);
   }
 
   const endFocusFeedback = (id) => () => {
-    setFocus("CURRENT");
+    setFocus("module");
   }
 
   return (
@@ -98,7 +131,12 @@ export const StudentView = () => {
         <div>
           <h1>{session ? session.name : ""}</h1>
           <p>{session ? session.instructions?.description : ""}</p>
-          {module ? <Module module={currentFocus == "CURRENT" ? module : currentFocus.snapshot } readonly={currentFocus != "CURRENT"} region={currentFocus != "CURRENT" ? currentFocus.feedback.region : []}/> : ''}
+          {module ? <Module 
+                      moduleID={module._id}
+                      content={currentFocus == "module" ? module : snapshot}
+                      region={currentFocus == "module" ? [] : feedback.region}
+                      onChange={onChange}
+                    /> : ''}
         </div>
 
         {module ? <Feedback module={module} beginFocus={focusFeedback} endFocus={endFocusFeedback}/> : ''}

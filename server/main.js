@@ -95,19 +95,20 @@ Meteor.startup(() => {
   });
 
   Meteor.publish('snapshots', function () {
-    const userID = this.userID;
+    const userID = this.userId;
     const userName = Meteor.users.findOne({ _id: userID }).username;
     // if instructor, return all snapshots, else only return modules owned by user making the request
-    return SnapshotsCollection.find(userName == "instructor" ? {} : { user: { _id: userID } });
+    return SnapshotsCollection.find(userName == "instructor" ? {} : { user: userID });
   });
 
   Meteor.publish('feedback', function () {
     const userID = this.userId;
     const userName = Meteor.users.findOne({ _id: userID }).username;
-    const studentModules = ModulesCollection.find({ user: { _id: userID } });
+    const studentModules = ModulesCollection.find({ user: userID }).fetch();
     return FeedbackCollection.find(userName == "instructor" ? {} : { module: { $in: studentModules.map(m => m._id) } })
   });
 
+  // Very helpful for getting started with Meteor Methods https://guide.meteor.com/methods.html#advanced-boilerplate
   const methods = [createFeedback, createModule, createRun, createSession, createSnapshot, rateFeedback, updateModule, addSessionUser];
 
   methods.forEach(method => {

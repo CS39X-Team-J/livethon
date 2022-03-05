@@ -2,14 +2,26 @@ import React, { useContext } from "react";
 import { useTracker } from "meteor/react-meteor-data";
 import { Solution } from "../../components/Solution.jsx";
 import { useNavigate, useParams } from "react-router-dom";
-import { getCodeBySession } from "../../services/Session.js";
+import { ModulesCollection } from "../../../api/modules.js";
 
 export const InstructorView = () => {
   const params = useParams();
   const navigate = useNavigate();
 
   const modules = useTracker(() => {
-    return getCodeBySession({ session: params.session });
+    const subscription = Meteor.subscribe('modules');
+    if (!subscription.ready()) {
+      return [];
+    }
+
+    console.log(ModulesCollection.find({
+      session: params.session
+    }).fetch())
+    
+    return ModulesCollection.find({
+      session: params.session
+    }).fetch();
+
   });
 
   const navigateTo = (path) => {

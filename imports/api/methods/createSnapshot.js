@@ -1,6 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 import { SnapshotsCollection, SessionsCollection } from '../modules';
+import { Roles } from 'meteor/alanning:roles';
 
 export const createSnapshot = {
   name: 'snapshots.create',
@@ -9,7 +10,6 @@ export const createSnapshot = {
   validate(args) {
     new SimpleSchema({
       code: { type: String },
-      output: { type: String },
       session: { type: String },
       user: { type: String },
       createdAt: { type: Date },
@@ -17,21 +17,20 @@ export const createSnapshot = {
   },
 
   // Factor out Method body so that it can be called independently (3)
-  run({ code, output, session, user, createdAt }) {
+  run({ code, session, user, createdAt }) {
       
     if (SessionsCollection.find({ name: session }).fetch().length == 0) {
         throw new Meteor.Error('snapshots.create.session_not_found',
         'Referenced session is not found');
     }
 
-    if (user != this.userId) {
+    if (user != this.userId && !Roles.userIsInRole(this.userId, 'instructor')) {
       throw new Meteor.Error('run.create.unauthorized',
         'Cannot create snapshot that is not yours');
     }
 
-    return SnapshotsCollection.insert({
+    SnapshotsCollection.insert({
         code,
-        output,
         session,
         user,
         createdAt,

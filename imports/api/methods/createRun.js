@@ -17,13 +17,14 @@ export const createRun = {
 
   // Factor out Method body so that it can be called independently (3)
   run({ moduleID, input, output, createdAt }) {
+
     const module = ModulesCollection.findOne({ _id: moduleID });
 
     if (!module) {
         throw new Meteor.Error('run.create.module_not_found',
         'Referenced module is not found')
     }
-    
+
     if (module.user != this.userId) {
       throw new Meteor.Error('run.create.unauthorized',
         'Cannot reference module that is not yours');

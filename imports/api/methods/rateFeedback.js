@@ -20,8 +20,8 @@ export const rateFeedback = {
     const feedback = FeedbackCollection.findOne({ _id: feedbackID });
     const moduleID = feedback.module;
 
-    const module = ModulesCollection.findOne({ _id: module });
-    const owner = module.user._id;
+    const module = ModulesCollection.findOne({ _id: moduleID });
+    const owner = module.user;
 
     if (owner != this.userId) {
       throw new Meteor.Error('feedback.rate.unauthorized',

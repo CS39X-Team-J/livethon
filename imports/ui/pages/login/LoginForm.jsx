@@ -50,7 +50,7 @@ export const LoginForm = () => {
       
     } else {
       Meteor.loginWithPassword(username, password);
-      if (!sessionExists.exists) {
+      if (!sessionExists) {
         navigateTo("instructor/session/create");
       } else {
         navigateTo(`instructor/session/${session}/view`);

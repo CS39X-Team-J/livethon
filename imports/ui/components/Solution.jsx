@@ -1,10 +1,11 @@
-import { FeedbackCollection, RunsCollection } from "../../api/modules";
+import { RunsCollection, SnapshotsCollection } from "../../api/modules";
 import { useTracker } from 'meteor/react-meteor-data';
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import AceEditor from "react-ace";
 import { useParams } from "react-router-dom";
-import { createSnapshot, getSnapshotByStudentSessionDate } from "../services/CodeSnapshot";
 import { ResultViewer } from "./ResultViewer";
+import { createFeedback } from "../../api/methods/createFeedback";
+import { createSnapshot } from "../../api/methods/createSnapshot";
 
 export const Solution = ({ module }) => {
   const [feedback, setFeedback] = useState("");
@@ -12,66 +13,87 @@ export const Solution = ({ module }) => {
   const params = useParams();
 
   const currentSnapshot = useTracker(() => {
-    return getSnapshotByStudentSessionDate({
-      user: module.user,
-      session: params.session,
-      date: module.createdAt,
-    });
-  });
-
-  const run = useTracker(() => {
-    return RunsCollection.findOne({ module: module._id }, { sort: { createdAt: -1 }});
+    const subscription = Meteor.subscribe('snapshots');
+    return {
+      snapshotID: SnapshotsCollection.findOne({
+        user: module.user,
+        session: params.session,
+        createdAt: module.createdAt,
+      })?._id,
+      isReady: subscription.ready()
+    }
   });
 
   const submitFeedback = () => {
     // check if snapshot of current code exists,
     // if not, create it and reference it in feedback collection
-    let snapshotID = currentSnapshot?._id;
-    if (!currentSnapshot) {
-      snapshotID = createSnapshot({ 
-        module, 
-        code: module.code,
-        date: module.createdAt,
-      })
-    }
 
-    FeedbackCollection.insert({
+    if (!currentSnapshot.snapshotID) {
+      createSnapshot.call({
+        code: module.code,
+        session: params.session,
+        user: module.user,
+        createdAt: module.createdAt,
+      }, (err, res) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Successfully created snapshot")
+        }
+      });
+    } 
+
+    const snapshotID = SnapshotsCollection.findOne({ 
+      session: params.session,
+      user: module.user,
+      createdAt: module.createdAt,
+    })._id;
+    
+    createFeedback.call({
+      moduleID: module._id,
       body: feedback,
-      module: module._id,
-      snapshot: snapshotID,
-      region: selection ? selection.getAllRanges() : [],
+      snapshotID,
+      selectedRegions: selection ? selection.getAllRanges() : {},
     });
 
   };
 
   return (
     <div key={module._id}>
-      <div className="module-container">
-        <h3>{module?.user?.username}</h3>
+      {
+        (currentSnapshot.isReady) ? (
+          <Fragment>
+            <div className="module-container">
+              <h3>{module?.user?.username}</h3>
 
-        <AceEditor
-          mode="python"
-          theme="github"
-          setOptions={{
-            useSoftTabs: true,
-          }}
-          highlightActiveLine={false}
-          onSelectionChange={(newRegion) => {
-            setSelection(newRegion);
-          }}
-          height="400px"
-          width="600px"
-          debounceChangePeriod={1000}
-          name={module._id}
-          readOnly={true}
-          editorProps={{ $blockScrolling: true }}
-          value={module.code}
-        />
+              <AceEditor
+                mode="python"
+                theme="github"
+                setOptions={{
+                  useSoftTabs: true,
+                }}
+                highlightActiveLine={false}
+                onSelectionChange={(newRegion) => {
+                  setSelection(newRegion);
+                }}
+                height="400px"
+                width="600px"
+                debounceChangePeriod={1000}
+                name={module._id}
+                readOnly={true}
+                editorProps={{ $blockScrolling: true }}
+                value={module.code}
+              />
 
-        <ResultViewer module={module} />
-      </div>
-      <input onInput={(e) => setFeedback(e.target.value)} />
-      <button onClick={submitFeedback}>Submit</button>
+              <ResultViewer moduleID={module._id} createdAt={module.createdAt} />
+            </div>
+            <input onInput={(e) => setFeedback(e.target.value)} />
+            <button onClick={submitFeedback}>Submit</button>
+          </Fragment>
+
+        ) : ''
+      }
+
     </div>
   );
 };

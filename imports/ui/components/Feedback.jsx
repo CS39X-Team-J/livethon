@@ -3,16 +3,22 @@ import { FeedbackCollection } from "../../api/modules";
 import { useTracker } from "meteor/react-meteor-data";
 import { FeedbackMessage } from "./FeedbackMessage";
 import { useParams } from "react-router-dom";
+import { rateFeedback } from "../../api/methods/rateFeedback";
 
 export const Feedback = ({ module, beginFocus, endFocus }) => {
   const user = useTracker(() => Meteor.user());
 
   const feedback = useTracker(() => {
-    return FeedbackCollection.find({ module: module._id }).fetch();
+    const subscription = Meteor.subscribe('feedback');
+    return subscription.ready() ? FeedbackCollection.find({ module: module._id }).fetch() : [];
   });
 
   const markHelpful = (id) => {
-    FeedbackCollection.update({ _id: id }, { $set: { helpful: true }});
+    rateFeedback.call({
+      feedbackID: id,
+      rating: true,
+      createdAt: new Date(),
+    })
   }
 
   return (
