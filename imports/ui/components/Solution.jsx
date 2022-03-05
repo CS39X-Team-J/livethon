@@ -12,23 +12,24 @@ export const Solution = ({ module }) => {
   const [selection, setSelection] = useState(null);
   const params = useParams();
 
-  const currentSnapshot = useTracker(() => {
+  const isReady = useTracker(() => {
     const subscription = Meteor.subscribe('snapshots');
-    return {
-      snapshotID: SnapshotsCollection.findOne({
-        user: module.user,
-        session: params.session,
-        createdAt: module.createdAt,
-      })?._id,
-      isReady: subscription.ready()
-    }
+    return subscription.ready();
   });
 
   const submitFeedback = () => {
     // check if snapshot of current code exists,
     // if not, create it and reference it in feedback collection
 
-    if (!currentSnapshot.snapshotID) {
+    const query = {
+      user: module.user,
+      session: params.session,
+      createdAt: module.createdAt,
+    };
+
+    const snapshot = SnapshotsCollection.findOne(query);
+
+    if (snapshot) {
       createSnapshot.call({
         code: module.code,
         session: params.session,
@@ -39,29 +40,23 @@ export const Solution = ({ module }) => {
           console.log(err);
         } else {
           console.log("Successfully created snapshot")
+          const snapshotID = SnapshotsCollection.findOne(query)._id;
+          createFeedback.call({
+            moduleID: module._id,
+            body: feedback,
+            snapshotID,
+            selectedRegions: selection ? selection.getAllRanges() : {},
+          });
         }
       });
+
     } 
-
-    const snapshotID = SnapshotsCollection.findOne({ 
-      session: params.session,
-      user: module.user,
-      createdAt: module.createdAt,
-    })._id;
-    
-    createFeedback.call({
-      moduleID: module._id,
-      body: feedback,
-      snapshotID,
-      selectedRegions: selection ? selection.getAllRanges() : {},
-    });
-
   };
 
   return (
     <div key={module._id}>
       {
-        (currentSnapshot.isReady) ? (
+        (isReady) ? (
           <Fragment>
             <div className="module-container">
               <h3>{module?.user?.username}</h3>
