@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
-import { ModulesCollection, SessionsCollection } from '../modules';
+import { SessionsCollection } from '../modules';
 
 
 export const addSessionUser = {

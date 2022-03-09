@@ -1,7 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 import { FeedbackCollection, ModulesCollection } from '../modules';
-import { Roles } from 'meteor/alanning:roles';
 
 export const rateFeedback = {
   name: 'feedback.rate',

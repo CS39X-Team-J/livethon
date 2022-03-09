@@ -2,13 +2,8 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-github";
 
-import React, { useContext, useEffect } from 'react';
-import { CompilationRequestContext } from '../App';
-import { execute } from '../services/CodeSnapshot';
+import React from 'react';
 import { ResultViewer } from "./ResultViewer";
-import { updateModule } from "../../api/methods/updateModule";
-import { createSnapshot } from "../../api/methods/createSnapshot";
-import { useParams } from "react-router-dom";
 
 export const Module = ({ moduleID, content, region, onChange, execute }) => {
 

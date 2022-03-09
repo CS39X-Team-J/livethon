@@ -1,6 +1,4 @@
-import React, { useContext } from "react";
-import { FeedbackCollection } from "../../api/modules";
-import { useTracker } from "meteor/react-meteor-data";
+import React from "react";
 
 export const FeedbackMessage = ({ comment, isHelpful }) => {
 

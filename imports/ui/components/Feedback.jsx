@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import { FeedbackCollection } from "../../api/modules";
 import { useTracker } from "meteor/react-meteor-data";
 import { FeedbackMessage } from "./FeedbackMessage";
-import { useParams } from "react-router-dom";
 import { rateFeedback } from "../../api/methods/rateFeedback";
 
 export const Feedback = ({ module, beginFocus, endFocus }) => {

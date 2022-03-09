@@ -1,4 +1,4 @@
-import { RunsCollection, SnapshotsCollection } from "../../api/modules";
+import { SnapshotsCollection } from "../../api/modules";
 import { useTracker } from 'meteor/react-meteor-data';
 import React, { Fragment, useState } from "react";
 import AceEditor from "react-ace";

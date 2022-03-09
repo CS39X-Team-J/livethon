@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Module } from "../../components/Module.jsx";
 import { Feedback } from "../../components/Feedback.jsx";
 import { useTracker } from 'meteor/react-meteor-data';

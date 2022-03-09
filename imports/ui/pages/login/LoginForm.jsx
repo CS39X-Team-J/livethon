@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Accounts } from 'meteor/accounts-base';
 import { SessionsCollection } from '../../../api/modules';
 import { useNavigate } from 'react-router-dom';
