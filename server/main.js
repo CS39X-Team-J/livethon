@@ -89,32 +89,28 @@ Meteor.startup(() => {
 
   Meteor.publish('modules', function () {
     const userID = this.userId;
-    const userName = Meteor.users.findOne({ _id: userID }).username;
     // if instructor, return all modules, else only return modules owned by user making the request
-    return ModulesCollection.find(userName == "instructor" ? {} : { user: userID });
+    return ModulesCollection.find(Roles.userIsInRole(this.userId, 'instructor') ? {} : { user: userID });
   });
 
   Meteor.publish('runs', function () {
     const userID = this.userId;
-    const userName = Meteor.users.findOne({ _id: userID }).username;
     
     // if instructor, return all runs, else only return modules owned by user making the request
-    const modules = ModulesCollection.find(userName == "instructor" ? {} : { user: userID }).fetch();
+    const modules = ModulesCollection.find(Roles.userIsInRole(this.userId, 'instructor') ? {} : { user: userID }).fetch();
     return RunsCollection.find({ module: { $in: modules.map(module => module._id) }});
   });
 
   Meteor.publish('snapshots', function () {
     const userID = this.userId;
-    const userName = Meteor.users.findOne({ _id: userID }).username;
     // if instructor, return all snapshots, else only return modules owned by user making the request
-    return SnapshotsCollection.find(userName == "instructor" ? {} : { user: userID });
+    return SnapshotsCollection.find(Roles.userIsInRole(this.userId, 'instructor') ? {} : { user: userID });
   });
 
   Meteor.publish('feedback', function () {
     const userID = this.userId;
-    const userName = Meteor.users.findOne({ _id: userID }).username;
     const studentModules = ModulesCollection.find({ user: userID }).fetch();
-    return FeedbackCollection.find(userName == "instructor" ? {} : { module: { $in: studentModules.map(m => m._id) } })
+    return FeedbackCollection.find(Roles.userIsInRole(this.userId, 'instructor') ? {} : { module: { $in: studentModules.map(m => m._id) } })
   });
 
   // Very helpful for getting started with Meteor Methods https://guide.meteor.com/methods.html#advanced-boilerplate
