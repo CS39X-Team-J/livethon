@@ -129,7 +129,7 @@ export const StudentView = () => {
     <div className="studentModule">
 
         <div>
-          <h1>{session ? session.name : ""}</h1>
+          <h1>{session ? session.title : ""}</h1>
           <p>{session ? session.instructions?.description : ""}</p>
           {module ? <Module 
                       moduleID={module._id}

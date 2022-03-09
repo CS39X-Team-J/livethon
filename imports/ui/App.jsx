@@ -11,7 +11,7 @@ import { WebWorkerPool } from '../api/webworker-pool.js';
 export const CompilationRequestContext = createContext();
 
 // create a pyodide webworker pool with 3 threads and 1 second timeout
-const pool = new WebWorkerPool(3, 1);
+const pool = new WebWorkerPool({ threads: 3, timeout: 1});
 
 export const App = () => {
 

@@ -95,3 +95,9 @@ b {
 .error-msg-body {
   color: red
 }
+
+.SolutionContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}

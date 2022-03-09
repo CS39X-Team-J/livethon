@@ -17,9 +17,13 @@ export const Solution = ({ module }) => {
     return subscription.ready();
   });
 
+  const userData = useTracker(() => {
+    Meteor.subscribe('userData');
+    return Meteor.users.findOne({ _id: module.user });
+  });
+
+  // assumes snapshots subscription is ready (meaning queries will return undefined only if there is no match)
   const submitFeedback = () => {
-    // check if snapshot of current code exists,
-    // if not, create it and reference it in feedback collection
 
     const query = {
       user: module.user,
@@ -29,7 +33,8 @@ export const Solution = ({ module }) => {
 
     const snapshot = SnapshotsCollection.findOne(query);
 
-    if (snapshot) {
+    // if snapshot doesn't exist, create snapshot, and on success, create feedback
+    if (!snapshot) {
       createSnapshot.call({
         code: module.code,
         session: params.session,
@@ -59,7 +64,7 @@ export const Solution = ({ module }) => {
         (isReady) ? (
           <Fragment>
             <div className="module-container">
-              <h3>{module?.user?.username}</h3>
+              <h3>Student: {userData?.username}</h3>
 
               <AceEditor
                 mode="python"

@@ -73,6 +73,15 @@ Meteor.startup(() => {
     remove() { return true; },
   });
 
+  Meteor.publish('userData', function () {
+    if (Roles.userIsInRole(this.userId, 'instructor')) {
+      return Meteor.users.find({}, {
+        fields: { username: 1, createdAt: 1 }
+      });
+    } else {
+      this.ready();
+    }
+  });
 
   Meteor.publish('sessions', function () {
     return SessionsCollection.find();

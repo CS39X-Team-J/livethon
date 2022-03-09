@@ -13,10 +13,6 @@ export const InstructorView = () => {
     if (!subscription.ready()) {
       return [];
     }
-
-    console.log(ModulesCollection.find({
-      session: params.session
-    }).fetch())
     
     return ModulesCollection.find({
       session: params.session
@@ -33,11 +29,13 @@ export const InstructorView = () => {
     <div className="InstructorView">
       <button onClick={() => navigateTo("/instructor/session/create")}>New Session</button>
       <h1>{ params.session }</h1>
+      <div className="SolutionContainer">
         {modules.map((module) => {
           return (
             <Solution module={module} key={module._id}></Solution>
           );
         })}
+      </div>
     </div>
   );
 
