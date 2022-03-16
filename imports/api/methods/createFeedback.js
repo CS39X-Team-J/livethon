@@ -19,6 +19,7 @@ export const createFeedback = {
 
   // Factor out Method body so that it can be called independently (3)
   run({ body, moduleID, snapshotID, selectedRegions, createdAt }) {
+    console.log("marker")
     const module = ModulesCollection.findOne({ _id: moduleID });
 
     if (!Roles.userIsInRole(this.userId, 'instructor')) {
@@ -31,13 +32,15 @@ export const createFeedback = {
       'Cannot give feedback to non-existent module');
     }
 
-    FeedbackCollection.insert({
+    const data = {
       body: body,
       module: moduleID, // TODO: is this necessary when snapshot is provided?
       snapshot: snapshotID,
       region: selectedRegions,
       createdAt,
-    })
+    };
+
+    FeedbackCollection.insert(data)
 
   },
 

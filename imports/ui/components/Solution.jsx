@@ -31,10 +31,10 @@ export const Solution = ({ module }) => {
       createdAt: module.createdAt,
     };
 
-    const snapshot = SnapshotsCollection.findOne(query);
+    let snapshotID = SnapshotsCollection.findOne(query);
 
     // if snapshot doesn't exist, create snapshot, and on success, create feedback
-    if (!snapshot) {
+    if (!snapshotID) {
       createSnapshot.call({
         code: module.code,
         session: params.session,
@@ -44,8 +44,7 @@ export const Solution = ({ module }) => {
         if (err) {
           console.log(err);
         } else {
-          console.log("Successfully created snapshot")
-          const snapshotID = SnapshotsCollection.findOne(query)._id;
+          snapshotID = SnapshotsCollection.findOne(query)._id;
           createFeedback.call({
             moduleID: module._id,
             body: feedback,
@@ -56,6 +55,14 @@ export const Solution = ({ module }) => {
       });
 
     } 
+
+    createFeedback.call({
+      moduleID: module._id,
+      body: feedback,
+      snapshotID,
+      selectedRegions: selection ? selection.getAllRanges() : {},
+    });
+
   };
 
   return (
