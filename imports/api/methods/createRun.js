@@ -22,7 +22,7 @@ export const createRun = {
 
     if (!module) {
         throw new Meteor.Error('run.create.module_not_found',
-        'Referenced module is not found')
+        'Referenced module is not found');
     }
 
     if (module.user != this.userId) {
@@ -36,6 +36,7 @@ export const createRun = {
         output,
         createdAt,
     });
+
   },
 
   // Call Method by referencing the JS object (4)

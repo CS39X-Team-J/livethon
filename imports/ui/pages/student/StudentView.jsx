@@ -92,9 +92,9 @@ export const StudentView = () => {
         createModule.call({
           code: sessionData.template ? sessionData.template : '',
           createdAt,
-          user: user._id,
           session: sessionData.name,
         }, (err, res) => {
+          
           if (!err) {
             console.log("Module successfully created!");
             const mod = ModulesCollection.findOne({ session: sessionData.name, user: user._id });
@@ -102,6 +102,7 @@ export const StudentView = () => {
           } else {
             alert(err);
           }
+
         });
 
       }

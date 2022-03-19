@@ -2,6 +2,7 @@ import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 import { ModulesCollection } from '../modules';
 
+// https://guide.meteor.com/methods.html#advanced-boilerplate
 export const updateModule = {
   name: 'modules.update',
 

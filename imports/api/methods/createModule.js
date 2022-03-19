@@ -10,25 +10,20 @@ export const createModule = {
         new SimpleSchema({
             code: { type: String },
             createdAt: { type: Date },
-            user: { type: String },
             session: { type: String },
         }).validate(args)
     },
 
     // Factor out Method body so that it can be called independently (3)
-    run({ code, createdAt, user, session }) {
-
-        if (user != this.userId) {
-            throw new Meteor.Error('modules.create.unauthorized',
-                'Cannot create module that is not yours');
-        }
+    run({ code, createdAt, session }) {
 
         ModulesCollection.insert({
             code,
             createdAt,
-            user,
+            user: this.userId,
             session,
         });
+
     },
 
     // Call Method by referencing the JS object (4)

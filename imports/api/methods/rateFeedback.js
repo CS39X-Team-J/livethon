@@ -24,7 +24,7 @@ export const rateFeedback = {
 
     if (owner != this.userId) {
       throw new Meteor.Error('feedback.rate.unauthorized',
-        'Cannot rate feedback for other users than yourself');
+        'Cannot rate feedback intended for users other than yourself');
     }
 
     FeedbackCollection.update({ _id: feedbackID }, {

@@ -41,9 +41,7 @@ export const LoginForm = () => {
       }
 
       if (!sessionExists) {
-        
         alert("Given session does not exist. Please try again!");
-      
       } else {
 
         Meteor.loginWithPassword(username, "password", (e) => {
@@ -75,7 +73,7 @@ export const LoginForm = () => {
         Meteor.loginWithPassword(username, password, (e) => {
           
           // This doesn't prevent people from just navigating to these
-          // pages themselves. 
+          // pages manually.
           if (!e) {
             if (!sessionExists) {
               navigateTo("instructor/session/create");

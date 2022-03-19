@@ -40,8 +40,6 @@ export const createFeedback = {
       createdAt,
     };
 
-    console.log(data)
-
     FeedbackCollection.insert(data)
 
   },

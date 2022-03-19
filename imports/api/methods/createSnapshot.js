@@ -26,7 +26,7 @@ export const createSnapshot = {
 
     if (user != this.userId && !Roles.userIsInRole(this.userId, 'instructor')) {
       throw new Meteor.Error('run.create.unauthorized',
-        'Cannot create snapshot that is not yours');
+        'Cannot create snapshot that is not yours with current permissions');
     }
 
     SnapshotsCollection.insert({
