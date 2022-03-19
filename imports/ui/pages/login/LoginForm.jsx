@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Accounts } from 'meteor/accounts-base';
 import { SessionsCollection } from '../../../api/modules';
 import { useNavigate } from 'react-router-dom';
+import { Roles } from 'meteor/alanning:roles';
 
 export const LoginForm = () => {
   const [session, setSession] = useState('');
@@ -31,23 +32,16 @@ export const LoginForm = () => {
       return;
     }
 
-    const user = Meteor.users.findOne({ username });
-
     if (isStudent) {
-
-      // prevent student from accidentally logging in as instructor
-      if (user && Roles.userIsInRole(user._id, 'instructor')) {
-        alert("Given username is reserved for instructors");
-      }
 
       if (!sessionExists) {
         alert("Given session does not exist. Please try again!");
       } else {
 
         Meteor.loginWithPassword(username, "password", (e) => {
-          
+
           if (e && e.reason == "User not found") {
-          
+
             Accounts.createUser({
               username,
               password: "password"
@@ -62,79 +56,72 @@ export const LoginForm = () => {
         });
 
       }
-      
+
     } else {
 
-      // prevent student accounts from viewing instructor content
-      if (user && !Roles.userIsInRole(user._id, 'instructor')) {
-        alert("Account given does not have role instructor");
-      } else {
-        
-        Meteor.loginWithPassword(username, password, (e) => {
-          
-          // This doesn't prevent people from just navigating to these
-          // pages manually.
-          if (!e) {
-            if (!sessionExists) {
-              navigateTo("instructor/session/create");
-            } else {
-              navigateTo(`instructor/session/${session}/view`);
-            }
+      Meteor.loginWithPassword(username, password, (e) => {
+
+        // This doesn't prevent people from just navigating to these
+        // pages manually.
+        if (!e) {
+          if (!sessionExists) {
+            navigateTo("instructor/session/create");
           } else {
-            alert("Username or password is incorrect");
+            navigateTo(`instructor/session/${session}/view`);
           }
+        } else {
+          alert("Username or password is incorrect");
+        }
 
-        });
-
-      }
-      
+      });
     }
-  };
 
-  return (           
-    
-      <form onSubmit={submit} className="login-form">
-      
+  };
+  return (
+
+    <form onSubmit={submit} className="login-form">
+
       <p>{isStudent ? "Student " : "Instructor"} sign in</p>
 
-        <div>
-          <label htmlFor="username">Username</label>
+      <div>
+        <label htmlFor="username">Username</label>
 
+        <input
+          type="text"
+          placeholder="Username"
+          name="username"
+          required
+          onChange={e => setUsername(e.target.value)}
+        />
+      </div>
+      {(!isStudent) ? (
+        <div>
+          <label htmlFor="password">Password</label>
           <input
-            type="text"
-            placeholder="Username"
-            name="username"
+            type="password"
+            placeholder=""
+            name="password"
             required
-            onChange={e => setUsername(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
           />
         </div>
-        {(!isStudent) ? (
-            <div>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              placeholder=""
-              name="password"
-              required
-              onChange={e => setPassword(e.target.value)}
-            />
-          </div>
-          ) : ""}
-        <div>
-            <label htmlFor="session">Session</label>
-            <input
-              type="text"
-              placeholder="Lab Name"
-              name="session"
-              required
-              onChange={e => setSession(e.target.value)}
-            />
-          </div>
+      ) : ""}
+      <div>
+        <label htmlFor="session">Session</label>
+        <input
+          type="text"
+          placeholder="Lab Name"
+          name="session"
+          required
+          onChange={e => setSession(e.target.value)}
+        />
+      </div>
 
-        <button type="submit">Log In</button>
-        <a href="#" onClick={() => setIsStudent(!isStudent)}>Sign in as {isStudent ? "Instructor" : "Student"} instead</a>
-       </form>  
-  
-    
+      <button type="submit">Log In</button>
+      <a href="#" onClick={() => setIsStudent(!isStudent)}>Sign in as {isStudent ? "Instructor" : "Student"} instead</a>
+    </form>
+
+
   );
+
 };

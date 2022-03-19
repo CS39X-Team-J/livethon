@@ -57,6 +57,7 @@ export const SessionCreationForm = () => {
   const submit = (event) => {
     // let state = this.state;
     event.preventDefault();
+
     const isImport = sessionData.sourceSelect.type === "import";
     const errorMsg = validate(sessionData);
 
@@ -78,10 +79,9 @@ export const SessionCreationForm = () => {
           alert(err);
         } else {
           console.log("Session successfully created");
+          navigate(`/instructor/session/${sessionData.name}/view`)
         }
       });
-      
-      navigate(`/instructor/session/${sessionData.name}/view`)
     }
   }
 
@@ -93,7 +93,6 @@ export const SessionCreationForm = () => {
     };
     fileReader.readAsText(importEvent.target.files[0], "UTF-8");
   }
-
 
     return (
       <form className="sessionCreationForm">

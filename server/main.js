@@ -74,13 +74,9 @@ Meteor.startup(() => {
   });
 
   Meteor.publish('userData', function () {
-    if (Roles.userIsInRole(this.userId, 'instructor')) {
-      return Meteor.users.find({}, {
-        fields: { username: 1, createdAt: 1 }
-      });
-    } else {
-      this.ready();
-    }
+    return Meteor.users.find({}, {
+      fields: { username: 1, createdAt: 1, _id: 1 }
+    });
   });
 
   Meteor.publish('sessions', function () {

@@ -14,8 +14,7 @@ export function UserFrame() {
   return (
     <Fragment>
       <div>
-        <button
-          onClick={() => {
+        <button onClick={() => { 
             Meteor.logout();
             navigate("/");
           }}
