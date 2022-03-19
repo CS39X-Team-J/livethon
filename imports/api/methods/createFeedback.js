@@ -19,17 +19,17 @@ export const createFeedback = {
 
   // Factor out Method body so that it can be called independently (3)
   run({ body, moduleID, snapshotID, selectedRegions, createdAt }) {
-    console.log("marker")
-    const module = ModulesCollection.findOne({ _id: moduleID });
 
+    const module = ModulesCollection.findOne({ _id: moduleID });
+    
     if (!Roles.userIsInRole(this.userId, 'instructor')) {
       throw new Meteor.Error('run.create.unauthorized',
-        'Cannot create snapshot that is not yours');
+        'Cannot create feedback that is not yours');
     }
 
     if (!module) {
       throw new Meteor.Error('feedback.create.module_not_found',
-      'Cannot give feedback to non-existent module');
+        'Cannot give feedback to non-existent module');
     }
 
     const data = {
@@ -39,6 +39,8 @@ export const createFeedback = {
       region: selectedRegions,
       createdAt,
     };
+
+    console.log(data)
 
     FeedbackCollection.insert(data)
 

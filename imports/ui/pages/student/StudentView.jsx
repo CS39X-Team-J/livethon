@@ -129,10 +129,11 @@ export const StudentView = () => {
         <div>
           <h1>{session ? session.title : ""}</h1>
           <p>{session ? session.instructions?.description : null}</p>
+          <p>{ console.log(feedback?.region) }</p>
           {module ? <Module 
                       moduleID={module._id}
                       content={currentFocus == "module" ? module : snapshot}
-                      region={currentFocus == "module" ? [] : feedback.region}
+                      region={currentFocus == "module" ? [] : feedback.region ? feedback.region : []}
                       onChange={onChange}
                     /> : ''}
         </div>

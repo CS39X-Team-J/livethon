@@ -35,6 +35,7 @@ export const createSnapshot = {
         user,
         createdAt,
     });
+
   },
 
   // Call Method by referencing the JS object (4)

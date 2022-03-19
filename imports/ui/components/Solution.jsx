@@ -25,13 +25,15 @@ export const Solution = ({ module }) => {
   // assumes snapshots subscription is ready (meaning queries will return undefined only if there is no match)
   const submitFeedback = () => {
 
+    const createdAt = new Date();
+
     const query = {
       user: module.user,
       session: params.session,
       createdAt: module.createdAt,
     };
 
-    let snapshotID = SnapshotsCollection.findOne(query);
+    let snapshotID = SnapshotsCollection.findOne(query)?._id;
 
     // if snapshot doesn't exist, create snapshot, and on success, create feedback
     if (!snapshotID) {
@@ -50,18 +52,22 @@ export const Solution = ({ module }) => {
             body: feedback,
             snapshotID,
             selectedRegions: selection ? selection.getAllRanges() : {},
+            createdAt,
           });
         }
       });
 
-    } 
+    } else {
+      // if snapshot already exists, simply create feedback
+      createFeedback.call({
+        moduleID: module._id,
+        body: feedback,
+        snapshotID,
+        selectedRegions: selection ? selection.getAllRanges() : {},
+        createdAt,
+      });
 
-    createFeedback.call({
-      moduleID: module._id,
-      body: feedback,
-      snapshotID,
-      selectedRegions: selection ? selection.getAllRanges() : {},
-    });
+    }     
 
   };
 

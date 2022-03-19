@@ -31,30 +31,65 @@ export const LoginForm = () => {
       return;
     }
 
+    const user = Meteor.users.findOne({ username });
+
     if (isStudent) {
+
+      // prevent student from accidentally logging in as instructor
+      if (user && Roles.userIsInRole(user._id, 'instructor')) {
+        alert("Given username is reserved for instructors");
+      }
+
       if (!sessionExists) {
+        
         alert("Given session does not exist. Please try again!");
+      
       } else {
+
         Meteor.loginWithPassword(username, "password", (e) => {
+          
           if (e && e.reason == "User not found") {
+          
             Accounts.createUser({
               username,
               password: "password"
             });
-          }           
+
+          }
+
           Meteor.loginWithPassword(username, "password", () => {
             navigateTo(`student/session/${session}`);
           });
+
         });
+
       }
       
     } else {
-      Meteor.loginWithPassword(username, password);
-      if (!sessionExists) {
-        navigateTo("instructor/session/create");
+
+      // prevent student accounts from viewing instructor content
+      if (user && !Roles.userIsInRole(user._id, 'instructor')) {
+        alert("Account given does not have role instructor");
       } else {
-        navigateTo(`instructor/session/${session}/view`);
+        
+        Meteor.loginWithPassword(username, password, (e) => {
+          
+          // This doesn't prevent people from just navigating to these
+          // pages themselves. 
+          if (!e) {
+            if (!sessionExists) {
+              navigateTo("instructor/session/create");
+            } else {
+              navigateTo(`instructor/session/${session}/view`);
+            }
+          } else {
+            alert("Username or password is incorrect");
+          }
+
+        });
+
       }
+      
     }
   };
 
