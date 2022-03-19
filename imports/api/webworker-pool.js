@@ -109,7 +109,6 @@ export class WebWorkerPool {
 
         // resolve awaited output with timeout error message
         this.requests.get(this.workerToRequest.get(workerID)).reject(`Timeout: Code took longer than ${this.timeout} second(s) to complete`);
-        console.log("Rejecting promise")
     }
 
 }

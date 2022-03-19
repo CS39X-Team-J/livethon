@@ -60,7 +60,6 @@ export const Solution = ({ module }) => {
           sendFeedback({ snapshotID, createdAt });
         }
       });
-
     } else {
       sendFeedback({ snapshotID, createdAt });
     }     

@@ -5,7 +5,7 @@ import "ace-builds/src-noconflict/theme-github";
 import React from 'react';
 import { ResultViewer } from "./ResultViewer";
 
-export const Module = ({ moduleID, content, region, onChange, execute }) => {
+export const Module = ({ moduleID, content, region, onChange, reset }) => {
 
   return (
     <div className="module-container">
@@ -36,7 +36,7 @@ export const Module = ({ moduleID, content, region, onChange, execute }) => {
           })}
         />
 
-        {/* <button onClick={() => { reset(); compile(module, module.code, request); }}>Reset Python Environment</button> */}
+        <button onClick={() => { reset(); }}>Reset Python Environment</button>
         
         <ResultViewer moduleID={moduleID} createdAt={content.createdAt}/>
 

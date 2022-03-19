@@ -7,16 +7,18 @@ import { SnapshotsCollection, FeedbackCollection, SessionsCollection, ModulesCol
 import { useParams } from "react-router-dom";
 import { addSessionUser } from '../../../api/methods/addSessionUser.js';
 import { createModule } from '../../../api/methods/createModule.js';
-import { execute } from '../../services/CodeSnapshot.js';
-import { CompilationRequestContext } from '../../App.jsx';
+import { execute } from '../../services/run-code.js';
 import { updateModule } from '../../../api/methods/updateModule.js';
 import { createSnapshot } from '../../../api/methods/createSnapshot.js';
+import { WebWorkerPool } from '../../../api/webworker-pool';
+
+// create a pyodide webworker pool with 3 threads and 1 second timeout
+const pool = new WebWorkerPool({ threads: 3, timeout: 1});
 
 export const StudentView = () => {
   const params = useParams();
   const user = Meteor.user();
   const [currentFocus, setFocus] = useState("module");
-  const { request, reset } = useContext(CompilationRequestContext);
 
   const { snapshot, feedback } = useTracker(() => {
     Meteor.subscribe('snapshots');
@@ -54,7 +56,7 @@ export const StudentView = () => {
       });    
 
       // execute code and add output to runs collection
-      await execute(module._id, currentCode, request, createdAt);
+      await execute({ moduleID: module._id, code: currentCode, pool, createdAt });
       
     }
 
@@ -64,7 +66,7 @@ export const StudentView = () => {
   // if student has no module for this session, that means the user is joining for the first time
   // and we need to add student to session
   const { module, session } = useTracker(() => {
-    
+
     const createdAt = new Date();
     const sessionSubscription = Meteor.subscribe('sessions');
     const moduleSubscription = Meteor.subscribe('modules');
@@ -98,7 +100,7 @@ export const StudentView = () => {
           if (!err) {
             // create first run
             const mod = ModulesCollection.findOne({ session: sessionData.name, user: user._id });
-            execute(mod._id, sessionData.template, request, mod.createdAt); 
+            execute({ moduleID: mod._id, code: sessionData.template, pool, createdAt: mod.createdAt }); 
 
           } else {
             alert(err);
@@ -115,6 +117,11 @@ export const StudentView = () => {
     }
     
   });
+
+  const resetPyodide = () => {
+    pool.reset();
+    execute({ moduleID: module._id, code: module.code, pool, createdAt: new Date() });
+  }
 
   const focusFeedback = (id) => () => {
     setFocus(id);
@@ -136,6 +143,7 @@ export const StudentView = () => {
                       content={currentFocus == "module" ? module : snapshot}
                       region={currentFocus == "module" ? [] : feedback.region ? feedback.region : []}
                       onChange={onChange}
+                      reset={resetPyodide}
                     /> : ''}
         </div>
 
