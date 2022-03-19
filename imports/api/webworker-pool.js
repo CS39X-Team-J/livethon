@@ -1,7 +1,7 @@
 export class WebWorkerPool {
 
-    constructor(poolSize = 3, timeout = 1) {
-        this.poolSize = poolSize;
+    constructor({ threads, timeout }) {
+        this.poolSize = threads;
         this.timeout = timeout;
         this.reset();
     }

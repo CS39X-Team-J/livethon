@@ -1,13 +1,13 @@
 import React, { Component, useContext, useState } from "react";
 import AceEditor from "react-ace";
 import { SessionsCollection } from "../../../api/modules";
+import { createSession } from "../../../api/methods/createSession";
 
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/mode-python";
 import { useNavigate } from "react-router-dom";
-import { SessionContext } from "../../App";
 
-export const SessionCreationForm = ({}) => {
+export const SessionCreationForm = () => {
   const [sessionData, setSessionData] = useState({
     errorMsg: "",
     name: "",
@@ -20,8 +20,8 @@ export const SessionCreationForm = ({}) => {
       editorText: "",
     },
   });
+
   let navigate = useNavigate();
-  const {session, setSession } = useContext(SessionContext);
 
   const handleEditorChange = (text) => {
     setSessionData({...sessionData, sourceSelect: {...sessionData.sourceSelect, editorText: text}});
@@ -57,25 +57,31 @@ export const SessionCreationForm = ({}) => {
   const submit = (event) => {
     // let state = this.state;
     event.preventDefault();
+
     const isImport = sessionData.sourceSelect.type === "import";
     const errorMsg = validate(sessionData);
 
     setSessionData({...sessionData, errorMsg});
+
     if (!errorMsg) {
-      setSession(sessionData.name);
       const template = isImport
         ? sessionData.sourceSelect.importText
         : sessionData.sourceSelect.editorText;
-      SessionsCollection.insert({
+      
+      createSession.call({
         name: sessionData.name,
-        instructions: {
-          title: sessionData.title,
-          description: sessionData.description,
-        },
+        title: sessionData.title,
+        description: sessionData.description,
         template,
-        users: [],
+        createdAt: new Date(),
+      }, (err, res) => {
+        if (err) {
+          alert(err);
+        } else {
+          console.log("Session successfully created");
+          navigate(`/instructor/session/${sessionData.name}/view`)
+        }
       });
-      navigateTo('/instuctor/');
     }
   }
 
@@ -87,7 +93,6 @@ export const SessionCreationForm = ({}) => {
     };
     fileReader.readAsText(importEvent.target.files[0], "UTF-8");
   }
-
 
     return (
       <form className="sessionCreationForm">

@@ -33,14 +33,16 @@ const listener = async (event) => {
         let results = self.pyodide.runPython(code);
         let stdout = self.pyodide.runPython("sys.stdout.getvalue()")
         self.postMessage({
-            results, stdout, id
+            results, 
+            stdout, 
+            id
         });
         
         
     }
     catch (error){
         self.postMessage(
-            {error : error.message, id}
+            { error : error.message, id }
         );
     }
 

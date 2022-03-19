@@ -15,7 +15,8 @@
     "react": "^16.13.1",
     "react-ace": "^9.5.0",
     "react-dom": "^16.13.1",
-    "react-router-dom": "^6.2.1"
+    "react-router-dom": "^6.2.1",
+    "simpl-schema": "^1.12.0"
   },
   "meteor": {
     "mainModule": {
