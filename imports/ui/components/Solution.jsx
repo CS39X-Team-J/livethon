@@ -22,6 +22,16 @@ export const Solution = ({ module }) => {
     return Meteor.users.findOne({ _id: module.user });
   });
 
+  const sendFeedback = ({ snapshotID, createdAt }) => {
+    createFeedback.call({
+      moduleID: module._id,
+      body: feedback,
+      snapshotID,
+      selectedRegions: selection ? selection.getAllRanges() : [],
+      createdAt,
+    });
+  }
+
   // assumes snapshots subscription is ready (meaning queries will return undefined only if there is no match)
   const submitFeedback = () => {
 
@@ -47,26 +57,12 @@ export const Solution = ({ module }) => {
           console.log(err);
         } else {
           snapshotID = SnapshotsCollection.findOne(query)._id;
-          createFeedback.call({
-            moduleID: module._id,
-            body: feedback,
-            snapshotID,
-            selectedRegions: selection ? selection.getAllRanges() : {},
-            createdAt,
-          });
+          sendFeedback({ snapshotID, createdAt });
         }
       });
 
     } else {
-      // if snapshot already exists, simply create feedback
-      createFeedback.call({
-        moduleID: module._id,
-        body: feedback,
-        snapshotID,
-        selectedRegions: selection ? selection.getAllRanges() : {},
-        createdAt,
-      });
-
+      sendFeedback({ snapshotID, createdAt });
     }     
 
   };

@@ -22,19 +22,28 @@ export const Feedback = ({ module, beginFocus, endFocus }) => {
 
   return (
     <div className="feedbackContainer">
+
       <h3>{"Feedback"}</h3>
+
       <div className="allFeedback">
+
         {feedback.map((feedback) => (
+
           <div onMouseEnter={beginFocus(feedback._id)} onMouseLeave={endFocus(feedback._id)} key={feedback._id}>
+            
             <FeedbackMessage
               isHelpful={() => { markHelpful(feedback._id) }}
               beginFocus={beginFocus(feedback._id)}
               endFocus={endFocus(feedback._id)}
               comment={feedback.body}
-            />          
-          </div>          
+            />  
+
+          </div>
+                    
         ))}
+
       </div>
+
     </div>
   );
 };
