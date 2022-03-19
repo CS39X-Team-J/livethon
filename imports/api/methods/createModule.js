@@ -31,12 +31,14 @@ export const createModule = {
     // the Method implementation, rather than requiring the caller
     // to specify it at the call site.
     call(args, callback) {
+
         const options = {
             returnStubValue: true,     // (5)
             throwStubExceptions: true  // (6)
         }
 
         Meteor.apply(this.name, [args], options, callback);
+        
     }
 };
 

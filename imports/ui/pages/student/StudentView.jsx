@@ -64,6 +64,7 @@ export const StudentView = () => {
   // if student has no module for this session, that means the user is joining for the first time
   // and we need to add student to session
   const { module, session } = useTracker(() => {
+    
     const createdAt = new Date();
     const sessionSubscription = Meteor.subscribe('sessions');
     const moduleSubscription = Meteor.subscribe('modules');
@@ -85,7 +86,6 @@ export const StudentView = () => {
         // add user to session
         addSessionUser.call({
           session: sessionData.name,
-          user: user._id,
         });
   
         // create module and then create first run
@@ -96,9 +96,10 @@ export const StudentView = () => {
         }, (err, res) => {
           
           if (!err) {
-            console.log("Module successfully created!");
+            // create first run
             const mod = ModulesCollection.findOne({ session: sessionData.name, user: user._id });
             execute(mod._id, sessionData.template, request, mod.createdAt); 
+
           } else {
             alert(err);
           }
@@ -130,7 +131,6 @@ export const StudentView = () => {
         <div>
           <h1>{session ? session.title : ""}</h1>
           <p>{session ? session.instructions?.description : null}</p>
-          <p>{ console.log(feedback?.region) }</p>
           {module ? <Module 
                       moduleID={module._id}
                       content={currentFocus == "module" ? module : snapshot}

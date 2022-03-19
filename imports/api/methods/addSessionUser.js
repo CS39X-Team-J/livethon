@@ -10,12 +10,12 @@ export const addSessionUser = {
   validate(args) {
     new SimpleSchema({
       session: { type: String },
-      user: { type: String },
     }).validate(args)
   },
 
   // Factor out Method body so that it can be called independently (3)
-  run({ session, user, createdAt }) {
+  run({ session }) {
+
     const sessionData = SessionsCollection.findOne({ name: session });
 
     if (!sessionData) {
@@ -23,18 +23,13 @@ export const addSessionUser = {
         'Cannot give join non-existent session');
     }
 
-    if (this.userId != user) {
-        throw new Meteor.Error('session.adduser.unauthorized', 
-        'Cannot add user besides yourself to session');
-    }
-
-    if (sessionData.users.includes(user)) {
+    if (sessionData.users.includes(this.userId)) {
         throw new Meteor.Error('session.adduser.duplicate', 
         'User already member of session');
     }
 
     SessionsCollection.update({ name: session }, { 
-        $addToSet: { users: user }
+        $addToSet: { users: this.userId }
     });
 
   },
