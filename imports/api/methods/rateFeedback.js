@@ -16,6 +16,7 @@ export const rateFeedback = {
 
   // Factor out Method body so that it can be called independently (3)
   run({ feedbackID, rating, createdAt }) {
+
     const feedback = FeedbackCollection.findOne({ _id: feedbackID });
     const moduleID = feedback.module;
 
@@ -33,7 +34,7 @@ export const rateFeedback = {
         ratedAt: createdAt,
       }
     });
-    
+
   },
 
   // Call Method by referencing the JS object (4)

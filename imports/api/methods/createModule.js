@@ -16,14 +16,12 @@ export const createModule = {
 
     // Factor out Method body so that it can be called independently (3)
     run({ code, createdAt, session }) {
-
         ModulesCollection.insert({
             code,
             createdAt,
             user: this.userId,
             session,
         });
-
     },
 
     // Call Method by referencing the JS object (4)
@@ -31,14 +29,13 @@ export const createModule = {
     // the Method implementation, rather than requiring the caller
     // to specify it at the call site.
     call(args, callback) {
-
         const options = {
             returnStubValue: true,     // (5)
             throwStubExceptions: true  // (6)
         }
 
         Meteor.apply(this.name, [args], options, callback);
-        
+
     }
 };
 

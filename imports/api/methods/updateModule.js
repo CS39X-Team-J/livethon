@@ -17,6 +17,7 @@ export const updateModule = {
 
   // Factor out Method body so that it can be called independently (3)
   run({ moduleID, code, createdAt }) {
+    
     const module = ModulesCollection.findOne({ _id: moduleID });
 
     if (module.user != this.userId) {
