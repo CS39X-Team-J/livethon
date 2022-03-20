@@ -5,3 +5,4 @@ export const SnapshotsCollection = new Mongo.Collection('snapshots'); // history
 export const ModulesCollection = new Mongo.Collection('modules'); // current snapshot of code, updated more frequently than snapshots collection
 export const RunsCollection = new Mongo.Collection('runs');
 export const FeedbackCollection = new Mongo.Collection('feedback');
+export const TestsCollection = new Mongo.Collection('tests')
