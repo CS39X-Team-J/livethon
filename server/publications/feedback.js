@@ -29,7 +29,6 @@ export const feedbackPublication = () => {
 
             children: [{
                 find(module) {
-                    console.log(module)
                     return FeedbackCollection.find({ module: module._id });
                 }
             }]

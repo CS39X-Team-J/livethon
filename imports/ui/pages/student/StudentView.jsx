@@ -21,7 +21,7 @@ export const StudentView = () => {
 
   const [currentFocus, setFocus] = useState({
     module: true,
-    snapshotID: null,
+    feedbackID: null,
   });
 
   const onChange = async (currentCode) => {
@@ -118,15 +118,17 @@ export const StudentView = () => {
     const snapshotSubscription = Meteor.subscribe('snapshots', params.session);
     const feedbackSubscription = Meteor.subscribe('feedback', params.session);
     let feedbackData = null;
+    let selectedFeedback = null;
     let snapshotData = null;
 
     if (module) {
-      console.log(FeedbackCollection.find({}).fetch())
       feedbackData = FeedbackCollection.find({ module: module._id }).fetch();
     }
 
     if (!currentFocus.module) {
-      const selectedFeedback = FeedbackCollection.findOne({ _id: currentFocus.snapshotID });
+      console.log(FeedbackCollection.find({}).fetch())
+      console.log(currentFocus.feedbackID)
+      selectedFeedback = FeedbackCollection.findOne({ _id: currentFocus.feedbackID });
       snapshotData = SnapshotsCollection.findOne({ _id: selectedFeedback.snapshot });
     }
 
@@ -134,6 +136,7 @@ export const StudentView = () => {
       isReady: snapshotSubscription.ready() && feedbackSubscription.ready() && module != undefined,
       snapshotData,
       feedbackData,
+      selectedFeedback,
     }
 
   });
@@ -144,11 +147,11 @@ export const StudentView = () => {
   }
 
   const focusFeedback = (id) => () => {
-    setFocus(id);
+    setFocus({ module: false, feedbackID: id });
   }
 
   const endFocusFeedback = (id) => () => {
-    setFocus("module");
+    setFocus({ module: true });
   }
 
   if (history.isReady) {
@@ -162,7 +165,7 @@ export const StudentView = () => {
           {module ? <Module
             moduleID={module._id}
             content={currentFocus.module ? module : history.snapshotData}
-            region={currentFocus.module ? [] : history.feedbackData.region ? history.feedbackData.region : []}
+            region={currentFocus.module ? [] : history.selectedFeedback.region ? history.selectedFeedback.region : []}
             onChange={onChange}
             reset={resetPyodide}
           /> : ''}
