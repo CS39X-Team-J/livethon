@@ -38,13 +38,10 @@ export const SessionCreate = () => {
 
   const handleChange = (key, value) => {
     setSessionData({ ...sessionData, [key]: value });
-    console.log(sessionData)
   }
 
   // call createSession Meteor method if name is unique
   const submit = () => {
-
-    console.log(sessionData)
 
     if (uniqueName.unique) {
 
@@ -55,7 +52,7 @@ export const SessionCreate = () => {
         if (err) {
           alert(err);
         } else {
-          navigate(`/instuctor/session/id/${sessionData.name}/view`);
+          navigate(`/instructor/session/id/${sessionData.name}/view`);
         }
       });
 

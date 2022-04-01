@@ -25,8 +25,6 @@ export const SessionView = () => {
     return (
 
         <Fragment>
-
-            <h1>{params.session}</h1>
             
             <div className="SolutionContainer">
                 

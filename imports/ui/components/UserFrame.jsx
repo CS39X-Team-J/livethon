@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Routes, useNavigate, Route } from "react-router-dom";
+import { Routes, useNavigate, Route, useParams } from "react-router-dom";
 import React from "react";
 import { useTracker } from "meteor/react-meteor-data";
 import { Meteor } from "meteor/meteor";
@@ -11,20 +11,20 @@ import { SessionCreate } from "../pages/instructor/SessionCreate";
 import { TestsEdit } from "../pages/instructor/TestsEdit";
 
 export function UserFrame() {
+  const params = useParams();
   const user = useTracker(() => Meteor.user());
   let navigate = useNavigate();
+
+  const logout = () => {
+    Meteor.logout();
+    navigate("/");
+  }
 
   return (
     <Fragment>
       <div>
-        <button onClick={() => { 
-            Meteor.logout();
-            navigate("/");
-          }}
-        >
-          Logout
-        </button>{" "}
-        Logged in as {user?.username}
+        <p>{user?.username}</p>
+        <button onClick={logout}>Logout</button>{" "}
       </div>
 
       <Routes>

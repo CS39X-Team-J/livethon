@@ -136,8 +136,8 @@ export const StudentView = () => {
     <div className="studentModule">
 
         <div>
-          <h1>{session ? session.title : ""}</h1>
-          <p>{session ? session.instructions?.description : null}</p>
+          <h1>{session ? session.instructions.title : ""}</h1>
+          <p>{session ? session.instructions.description : null}</p>
           {module ? <Module 
                       moduleID={module._id}
                       content={currentFocus == "module" ? module : snapshot}

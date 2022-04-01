@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import AceEditor from "react-ace";
-import { SessionsCollection } from "../../../api/modules";
-import { useTracker } from "meteor/react-meteor-data";
-
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/mode-python";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { createSession } from "../../../api/methods/createSession";
-import { updateSession } from "../../../api/methods/updateSession";
+import { useParams } from "react-router-dom";
 
 export const SessionEditForm = ({ sessionData, handleChange, submit }) => {
 
