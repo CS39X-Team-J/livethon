@@ -11,4 +11,8 @@ export const testsPublication = () => {
 
     });
 
+    Meteor.publish('test-results', function (run) {
+
+    });
+
 }

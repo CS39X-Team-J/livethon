@@ -6,3 +6,4 @@ export const ModulesCollection = new Mongo.Collection('modules'); // current sna
 export const RunsCollection = new Mongo.Collection('runs');
 export const FeedbackCollection = new Mongo.Collection('feedback');
 export const TestsCollection = new Mongo.Collection('tests')
+export const TestResultsCollection = new Mongo.Collection('testresults');

@@ -4,6 +4,9 @@ import { FeedbackCollection, ModulesCollection } from "../../imports/api/modules
 
 // https://guide.meteor.com/data-loading.html#publishing-relations
 // this package lets us use intermediate queries in a reactive way
+
+// without this package, any results depending on intermediate queries will not 
+// trigger an update in useTracker if the intermediate queries change
 export const feedbackPublication = () => {
     
     Meteor.publishComposite('feedback', function (session) {

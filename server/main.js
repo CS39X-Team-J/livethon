@@ -15,6 +15,7 @@ import { updateTestCase } from '../imports/api/methods/updateTestCase';
 import { removeTestCase } from '../imports/api/methods/removeTestCase';
 import { initializePublications } from './publications';
 import { initializeRules } from './rules';
+import { createTestResult } from '../imports/api/methods/createTestResult';
 
 
 // Placeholder for actual login credentials
@@ -63,6 +64,7 @@ Meteor.startup(() => {
     createTestCase,
     updateTestCase,
     removeTestCase,
+    createTestResult,
   ];
 
   methods.forEach(method => {
