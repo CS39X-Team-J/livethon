@@ -3,6 +3,7 @@ import { modulesPublication } from './publications/modules';
 import { runsPublication } from './publications/runs';
 import { sessionsPublication } from './publications/sessions';
 import { snapshotsPublication } from './publications/snapshots';
+import { testsPublication } from './publications/tests';
 import { userPublication } from './publications/user';
 
 export const initializePublications = () => {
@@ -12,4 +13,5 @@ export const initializePublications = () => {
     sessionsPublication();
     snapshotsPublication();
     userPublication();
+    testsPublication();
 }

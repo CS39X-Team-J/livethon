@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Accounts } from 'meteor/accounts-base';
 import { SessionsCollection } from '../../../api/modules';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Roles } from 'meteor/alanning:roles';
 
 export const LoginForm = () => {
   const [session, setSession] = useState('');

@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { RunsCollection, ModulesCollection, SnapshotsCollection, FeedbackCollection, SessionsCollection } from '../imports/api/modules';
 import { Roles } from 'meteor/alanning:roles';
 import { createFeedback } from '../imports/api/methods/createFeedback';
 import { createModule } from '../imports/api/methods/createModule';
@@ -11,6 +10,9 @@ import { rateFeedback } from '../imports/api/methods/rateFeedback';
 import { updateModule } from '../imports/api/methods/updateModule';
 import { addSessionUser } from '../imports/api/methods/addSessionUser';
 import { updateSession } from '../imports/api/methods/updateSession';
+import { createTestCase } from '../imports/api/methods/createTestCase';
+import { updateTestCase } from '../imports/api/methods/updateTestCase';
+import { removeTestCase } from '../imports/api/methods/removeTestCase';
 import { initializePublications } from './publications';
 import { initializeRules } from './rules';
 
@@ -48,7 +50,20 @@ Meteor.startup(() => {
   initializePublications();
 
   // Very helpful for getting started with Meteor Methods https://guide.meteor.com/methods.html#advanced-boilerplate
-  const methods = [createFeedback, createModule, createRun, createSession, updateSession, createSnapshot, rateFeedback, updateModule, addSessionUser];
+  const methods = [
+    createFeedback,
+    createModule, 
+    createRun, 
+    createSession, 
+    updateSession, 
+    createSnapshot, 
+    rateFeedback, 
+    updateModule, 
+    addSessionUser,
+    createTestCase,
+    updateTestCase,
+    removeTestCase,
+  ];
 
   methods.forEach(method => {
     // register each method with Meteor's DDP system

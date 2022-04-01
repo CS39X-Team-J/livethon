@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { TestsCollection } from '../modules';
 import { Roles } from 'meteor/alanning:roles';
 
-export const deleteTestCase = {
+export const removeTestCase = {
   name: 'testcase.delete',
 
   // Factor out validation so that it can be run independently (1)

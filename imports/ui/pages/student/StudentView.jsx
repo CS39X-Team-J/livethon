@@ -126,8 +126,6 @@ export const StudentView = () => {
     }
 
     if (!currentFocus.module) {
-      console.log(FeedbackCollection.find({}).fetch())
-      console.log(currentFocus.feedbackID)
       selectedFeedback = FeedbackCollection.findOne({ _id: currentFocus.feedbackID });
       snapshotData = SnapshotsCollection.findOne({ _id: selectedFeedback.snapshot });
     }
