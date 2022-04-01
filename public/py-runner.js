@@ -37,8 +37,6 @@ const listener = async (event) => {
             stdout, 
             id
         });
-        
-        
     }
     catch (error){
         self.postMessage(

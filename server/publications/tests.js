@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TestsCollection } from "../../imports/api/modules";
+import { TestResultsCollection, TestsCollection } from "../../imports/api/modules";
 
 export const testsPublication = () => {
     
@@ -11,8 +11,8 @@ export const testsPublication = () => {
 
     });
 
-    Meteor.publish('test-results', function (run) {
-
+    Meteor.publish('test-results', function (run, test) {
+        return TestResultsCollection.find({ runID: run, testID: test });
     });
 
 }
