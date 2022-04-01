@@ -13,7 +13,7 @@ export const Solution = ({ module }) => {
   const params = useParams();
 
   const isReady = useTracker(() => {
-    const subscription = Meteor.subscribe('snapshots');
+    const subscription = Meteor.subscribe('snapshots', params.session);
     return subscription.ready();
   });
 

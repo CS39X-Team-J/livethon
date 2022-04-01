@@ -10,7 +10,8 @@ export const SessionView = () => {
     const params = useParams();
 
     const modules = useTracker(() => {
-        const subscription = Meteor.subscribe('modules');
+        console.log(params.session)
+        const subscription = Meteor.subscribe('modules', params.session);
         if (!subscription.ready()) {
           return [];
         }

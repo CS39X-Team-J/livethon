@@ -16,6 +16,14 @@ export const createModule = {
 
     // Factor out Method body so that it can be called independently (3)
     run({ code, createdAt, session }) {
+
+        const module = ModulesCollection.findOne({ user: this.userId, session });
+        
+        if (module) {
+            throw new Meteor.Error('modules.create.duplicate',
+                'Cannot own more than one module per session');
+        }
+
         ModulesCollection.insert({
             code,
             createdAt,

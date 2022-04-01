@@ -14,7 +14,7 @@ export const modulesPublication = () => {
             query = { session, user: this.userId };
         }
 
-        return ModulesCollection.find({ session });
+        return ModulesCollection.find(query);
 
     });
 
