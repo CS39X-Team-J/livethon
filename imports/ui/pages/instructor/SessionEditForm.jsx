@@ -6,8 +6,32 @@ import { useTracker } from "meteor/react-meteor-data";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/mode-python";
 import { useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { createSession } from "../../../api/methods/createSession";
+import { updateSession } from "../../../api/methods/updateSession";
 
-export const SessionEditForm = ({ isNew }) => {
+export const SessionEditForm = ({ sessionData, handleChange, submit }) => {
+
+    const params = useParams();
+
+    const [type, setType] = useState("create");
+    const [importText, setImportText] = useState("");
+    const [editorText, setEditorText] = useState("");
+
+    const getTemplate = () => {
+        return sessionData.sourceSelect.type === 'import'
+            ? sessionData.sourceSelect.importText
+            : sessionData.sourceSelect.editorText;
+    }
+
+    const changeValue = (e) => {
+
+        const key = e.target.name;
+        const newValue = e.target.value;
+
+        handleChange(key, newValue);
+
+    }
 
     const handleImport = (importEvent) => {
         let fileReader = new FileReader();
@@ -19,29 +43,15 @@ export const SessionEditForm = ({ isNew }) => {
     }
 
     return (
-        sessionData.isReady ? 
-        (
-            <form className="sessionCreationForm">
-            <h1>Edit Session</h1>
-            <div className="scf-entry">
-                <label>
-                    <strong>Session name: </strong>
-                    <input
-                        type="text"
-                        name="name"
-                        value={name}
-                        onChange={setName}
-                    ></input>
-                </label>
-            </div>
+        <div>
             <div className="scf-entry">
                 <label>
                     <strong>Session title: </strong>
                     <input
                         type="text"
                         name="title"
-                        value={title}
-                        onChange={setTitle}
+                        value={sessionData.title}
+                        onChange={changeValue}
                     ></input>
                 </label>
             </div>
@@ -53,8 +63,8 @@ export const SessionEditForm = ({ isNew }) => {
                     <textarea
                         type="text"
                         name="description"
-                        value={description}
-                        onChange={setDescription}
+                        value={sessionData.description}
+                        onChange={changeValue}
                     ></textarea>
                 </label>
             </div>
@@ -100,14 +110,14 @@ export const SessionEditForm = ({ isNew }) => {
                             highlightActiveLine={false}
                             height="300px"
                             width="400px"
-                            value={editorText}
-                            onChange={setEditorText}
+                            value={sessionData.template}
+                            onChange={(val) => { handleChange("template", val); }}
                             debounceChangePeriod={1000}
                             editorProps={{ $blockScrolling: true }}
                         />
                     ) : (
                         <div>
-                            {importText != undefined && (
+                            {sessionData.template != undefined && (
                                 <AceEditor
                                     mode="python"
                                     theme="github"
@@ -118,7 +128,7 @@ export const SessionEditForm = ({ isNew }) => {
                                     highlightActiveLine={false}
                                     height="300px"
                                     width="400px"
-                                    value={importText}
+                                    value={sessionData.template}
                                     readOnly={true}
                                     editorProps={{ $blockScrolling: true }}
                                 />
@@ -133,25 +143,12 @@ export const SessionEditForm = ({ isNew }) => {
                     )}
                 </div>
             </div>
-            {errorMsg && (
-                <div>
-                    <p className="error-msg-body">{errorMsg}</p>
-                </div>
-            )}
-            <label>
-                <input
-                    type="submit"
-                    value="submit"
-                    onClick={(event) => {
-                        submit(event);
-                    }}
-                ></input>
-            </label>
-        </form>
-        ) : (sessionData.doesNotExist ? (<h1>Session does not exist</h1>) :
-        (
-            <h1>Loading</h1>
-        ))
-        
+            <button onClick={(e) => {
+                e.preventDefault();
+                submit();
+            }}>Submit</button>
+        </div>
+
+
     );
 }

@@ -17,7 +17,8 @@ export const InstructorView = () => {
     <div className="InstructorView">
       <div>
         <button onClick={() => navigateTo("/instructor/session/create")}>New Session</button>
-        <button onClick={() => navigateTo("/instructor/session/tests")}>Tests</button>
+        <button onClick={() => navigateTo("tests")}>Tests</button>
+        <button onClick={() => navigateTo("edit")}>Session Details</button>
       </div>
 
       <Outlet />

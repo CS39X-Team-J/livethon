@@ -7,6 +7,7 @@ import { InstructorView } from "../pages/instructor/InstructorView";
 import { StudentView } from "../pages/student/StudentView";
 import { SessionView } from "../pages/instructor/SessionView";
 import { SessionEdit } from "../pages/instructor/SessionEdit";
+import { SessionCreate } from "../pages/instructor/SessionCreate";
 import { TestsEdit } from "../pages/instructor/TestsEdit";
 
 export function UserFrame() {
@@ -36,7 +37,7 @@ export function UserFrame() {
 
         </Route>
         
-        <Route path="instructor/session/create" element={<SessionEdit isNew={true} />} />      
+        <Route path="instructor/session/create" element={<SessionCreate/>} />      
 
         <Route path="student/session/:session" element={<StudentView/>} />
 

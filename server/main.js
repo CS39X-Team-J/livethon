@@ -10,6 +10,7 @@ import { createSnapshot } from '../imports/api/methods/createSnapshot';
 import { rateFeedback } from '../imports/api/methods/rateFeedback';
 import { updateModule } from '../imports/api/methods/updateModule';
 import { addSessionUser } from '../imports/api/methods/addSessionUser';
+import { updateSession } from '../imports/api/methods/updateSession';
 
 
 // Placeholder for actual login credentials
@@ -110,7 +111,7 @@ Meteor.startup(() => {
   });
 
   // Very helpful for getting started with Meteor Methods https://guide.meteor.com/methods.html#advanced-boilerplate
-  const methods = [createFeedback, createModule, createRun, createSession, createSnapshot, rateFeedback, updateModule, addSessionUser];
+  const methods = [createFeedback, createModule, createRun, createSession, updateSession, createSnapshot, rateFeedback, updateModule, addSessionUser];
 
   methods.forEach(method => {
     // register each method with Meteor's DDP system
