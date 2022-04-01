@@ -2,23 +2,39 @@ import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 import { FeedbackCollection, ModulesCollection } from "../../imports/api/modules";
 
+// https://guide.meteor.com/data-loading.html#publishing-relations
+// this package lets us use intermediate queries in a reactive way
 export const feedbackPublication = () => {
     
-    Meteor.publish('feedback', function (session) {
+    Meteor.publishComposite('feedback', function (session) {
 
-        if (Roles.userIsInRole(this.userId, 'instructor')) {
-            // instructors can see feedback for all sessions
-            const modules = ModulesCollection.find({ session });
-            return FeedbackCollection.find({ module: { $in: modules.map(m => m._id) }});
-        } else {
-            // students can only view feedback addressed to them
-            const module = ModulesCollection.findOne({ session, user: this.userId });
-            if (!module) {
-                return this.ready();
-            } else {
-                return FeedbackCollection.find({ module: module._id });
-            }
-        }       
+        return {
+
+            find() {
+
+                let modulesQuery = { session };
+
+                // if user is not instructor, return only feedback addressed to user
+                if (!Roles.userIsInRole(this.userId, 'instructor')) {
+                    modulesQuery = { ...modulesQuery, user: this.userId };
+                }  
+
+                const options = {
+                    fields: { _id: 1 }
+                }
+
+                return ModulesCollection.find(modulesQuery, options);
+
+            },
+
+            children: [{
+                find(module) {
+                    console.log(module)
+                    return FeedbackCollection.find({ module: module._id });
+                }
+            }]
+
+        }    
 
     });
 

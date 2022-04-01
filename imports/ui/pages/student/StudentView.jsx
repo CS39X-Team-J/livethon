@@ -13,39 +13,28 @@ import { createSnapshot } from '../../../api/methods/createSnapshot.js';
 import { WebWorkerPool } from '../../../api/webworker-pool';
 
 // create a pyodide webworker pool with 3 threads and 1 second timeout
-const pool = new WebWorkerPool({ threads: 3, timeout: 1});
+const pool = new WebWorkerPool({ threads: 3, timeout: 1 });
 
 export const StudentView = () => {
   const params = useParams();
   const user = Meteor.user();
 
-  const [currentFocus, setFocus] = useState("module");
-
-  const { snapshot, feedback } = useTracker(() => {
-    Meteor.subscribe('snapshots', params.session);
-    Meteor.subscribe('feedback', params.session);
-    
-    feedbackData = FeedbackCollection.findOne({ _id: currentFocus });
-    snapshotData = SnapshotsCollection.findOne({ _id: feedbackData?.snapshot });
-
-    return {
-      snapshot: snapshotData,
-      feedback: feedbackData,
-    }
-    
+  const [currentFocus, setFocus] = useState({
+    module: true,
+    snapshotID: null,
   });
 
   const onChange = async (currentCode) => {
-    
+
     let createdAt = new Date();
 
     // only update module and create snapshots if user is working with current code and has made a change
-    if (currentFocus == "module" && currentCode != module.code) {
+    if (currentFocus.module && currentCode != module.code) {
 
       updateModule.call({
         moduleID: module._id,
         code: currentCode,
-        createdAt,          
+        createdAt,
       });
 
       // TODO: restrict snapshot frequency
@@ -54,13 +43,33 @@ export const StudentView = () => {
         session: params.session,
         user: module.user,
         createdAt,
-      });    
+      });
 
       // execute code and add output to runs collection
       await execute({ moduleID: module._id, code: currentCode, pool, createdAt });
-      
+
     }
 
+  }
+
+  const setupModule = ({ sessionData, createdAt }) => {
+    // create module and then create first run
+    createModule.call({
+      code: sessionData.template ? sessionData.template : '',
+      createdAt,
+      session: sessionData.name,
+    }, (err, res) => {
+
+      if (!err) {
+        // create first run
+        const mod = ModulesCollection.findOne({ session: sessionData.name, user: user._id });
+        execute({ moduleID: mod._id, code: sessionData.template, pool, createdAt: mod.createdAt });
+
+      } else {
+        alert(err);
+      }
+
+    });
   }
 
   // get module for student in this session
@@ -77,36 +86,22 @@ export const StudentView = () => {
 
     // when sessions subscription is ready, we are guaranteed to get actual results from queries
     if (sessionSubscription.ready() && moduleSubscription.ready()) {
+
       // check if session exists
       if (sessionData == undefined) {
         alert(`Session ${params.session} does not exist!`);
       }
-  
+
       // if user is not in session, add to session and create module
-      if (!SessionsCollection.findOne({ name: sessionData.name, users: { $in: [user._id] }})) {
+      if (!SessionsCollection.findOne({ name: sessionData.name, users: { $in: [user._id] } })) {
         
         // add user to session
         addSessionUser.call({
           session: sessionData.name,
-        });
-  
-        // create module and then create first run
-        createModule.call({
-          code: sessionData.template ? sessionData.template : '',
-          createdAt,
-          session: sessionData.name,
         }, (err, res) => {
-          
           if (!err) {
-            // create first run
-            const mod = ModulesCollection.findOne({ session: sessionData.name, user: user._id });
-            console.log(ModulesCollection.find({}).fetch())
-            execute({ moduleID: mod._id, code: sessionData.template, pool, createdAt: mod.createdAt }); 
-
-          } else {
-            alert(err);
+            setupModule({ sessionData, createdAt });
           }
-
         });
 
       }
@@ -116,7 +111,31 @@ export const StudentView = () => {
       module: moduleData,
       session: sessionData,
     }
-    
+
+  });
+
+  const history = useTracker(() => {
+    const snapshotSubscription = Meteor.subscribe('snapshots', params.session);
+    const feedbackSubscription = Meteor.subscribe('feedback', params.session);
+    let feedbackData = null;
+    let snapshotData = null;
+
+    if (module) {
+      console.log(FeedbackCollection.find({}).fetch())
+      feedbackData = FeedbackCollection.find({ module: module._id }).fetch();
+    }
+
+    if (!currentFocus.module) {
+      const selectedFeedback = FeedbackCollection.findOne({ _id: currentFocus.snapshotID });
+      snapshotData = SnapshotsCollection.findOne({ _id: selectedFeedback.snapshot });
+    }
+
+    return {
+      isReady: snapshotSubscription.ready() && feedbackSubscription.ready() && module != undefined,
+      snapshotData,
+      feedbackData,
+    }
+
   });
 
   const resetPyodide = () => {
@@ -132,23 +151,28 @@ export const StudentView = () => {
     setFocus("module");
   }
 
-  return (
-    
-    <div className="studentModule">
+  if (history.isReady) {
+    return (
+
+      <div className="studentModule">
 
         <div>
           <h1>{session ? session.instructions.title : ""}</h1>
           <p>{session ? session.instructions.description : null}</p>
-          {module ? <Module 
-                      moduleID={module._id}
-                      content={currentFocus == "module" ? module : snapshot}
-                      region={currentFocus == "module" ? [] : feedback.region ? feedback.region : []}
-                      onChange={onChange}
-                      reset={resetPyodide}
-                    /> : ''}
+          {module ? <Module
+            moduleID={module._id}
+            content={currentFocus.module ? module : history.snapshotData}
+            region={currentFocus.module ? [] : history.feedbackData.region ? history.feedbackData.region : []}
+            onChange={onChange}
+            reset={resetPyodide}
+          /> : ''}
         </div>
 
-        {module ? <Feedback module={module} beginFocus={focusFeedback} endFocus={endFocusFeedback}/> : ''}
-    </div>
-  );
+        {history.isReady ? <Feedback feedback={history.feedbackData} beginFocus={focusFeedback} endFocus={endFocusFeedback} /> : ''}
+      </div>
+    );
+  } else {
+    return (<p>Loading...</p>)
+  }
+
 };

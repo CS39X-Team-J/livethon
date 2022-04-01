@@ -4,13 +4,8 @@ import { useTracker } from "meteor/react-meteor-data";
 import { FeedbackMessage } from "./FeedbackMessage";
 import { rateFeedback } from "../../api/methods/rateFeedback";
 
-export const Feedback = ({ module, beginFocus, endFocus }) => {
+export const Feedback = ({ feedback, beginFocus, endFocus }) => {
   const user = useTracker(() => Meteor.user());
-
-  const feedback = useTracker(() => {
-    const subscription = Meteor.subscribe('feedback');
-    return subscription.ready() ? FeedbackCollection.find({ module: module._id }).fetch() : [];
-  });
 
   const markHelpful = (id) => {
     rateFeedback.call({
@@ -27,20 +22,22 @@ export const Feedback = ({ module, beginFocus, endFocus }) => {
 
       <div className="allFeedback">
 
-        {feedback.map((feedback) => (
+        {
+          feedback.map((feedback) => (
 
-          <div onMouseEnter={beginFocus(feedback._id)} onMouseLeave={endFocus(feedback._id)} key={feedback._id}>
-            
-            <FeedbackMessage
-              isHelpful={() => { markHelpful(feedback._id) }}
-              beginFocus={beginFocus(feedback._id)}
-              endFocus={endFocus(feedback._id)}
-              comment={feedback.body}
-            />  
+            <div onMouseEnter={beginFocus(feedback._id)} onMouseLeave={endFocus(feedback._id)} key={feedback._id}>
 
-          </div>
-                    
-        ))}
+              <FeedbackMessage
+                isHelpful={() => { markHelpful(feedback._id) }}
+                beginFocus={beginFocus(feedback._id)}
+                endFocus={endFocus(feedback._id)}
+                comment={feedback.body}
+              />
+
+            </div>
+
+          ))
+        }
 
       </div>
 
