@@ -3,7 +3,7 @@ import { useTracker } from 'meteor/react-meteor-data';
 import React, { useState } from 'react';
 import { Accounts } from 'meteor/accounts-base';
 import { SessionsCollection } from '../../../api/modules';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Roles } from 'meteor/alanning:roles';
 
 export const LoginForm = () => {
@@ -23,9 +23,17 @@ export const LoginForm = () => {
     navigate(path)
   }
 
+  const studentLogin = () => {
+    Meteor.loginWithPassword(username, "password", () => {
+      navigateTo(`student/session/${session}`);
+    });
+  }
+
   const submit = e => {
     e.preventDefault();
     // students can sign in with any name
+
+    console.log(sessionExists)
 
     if (username == '') {
       alert("Username field cannot be empty.")
@@ -42,16 +50,17 @@ export const LoginForm = () => {
 
           if (e && e.reason == "User not found") {
 
+            // turn into meteor method to get cal
             Accounts.createUser({
               username,
               password: "password"
+            }, () => {
+              studentLogin();
             });
 
-          }
-
-          Meteor.loginWithPassword(username, "password", () => {
-            navigateTo(`student/session/${session}`);
-          });
+          } else {
+            studentLogin();
+          }        
 
         });
 
@@ -78,7 +87,7 @@ export const LoginForm = () => {
 
   };
 
-  
+
   return (
 
     <form onSubmit={submit} className="login-form">

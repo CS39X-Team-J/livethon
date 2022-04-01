@@ -23,8 +23,8 @@ export function UserFrame() {
   return (
     <Fragment>
       <div>
-        <p>{user?.username}</p>
-        <button onClick={logout}>Logout</button>{" "}
+        {user?.username}{" "}
+        <button onClick={logout}>Logout</button>
       </div>
 
       <Routes>

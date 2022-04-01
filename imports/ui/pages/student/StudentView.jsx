@@ -18,11 +18,14 @@ const pool = new WebWorkerPool({ threads: 3, timeout: 1});
 export const StudentView = () => {
   const params = useParams();
   const user = Meteor.user();
+
+  console.log(user)
+
   const [currentFocus, setFocus] = useState("module");
 
   const { snapshot, feedback } = useTracker(() => {
-    Meteor.subscribe('snapshots');
-    Meteor.subscribe('feedback');
+    Meteor.subscribe('snapshots', [params.session]);
+    Meteor.subscribe('feedback', [params.session]);
     
     feedbackData = FeedbackCollection.findOne({ _id: currentFocus });
     snapshotData = SnapshotsCollection.findOne({ _id: feedbackData?.snapshot });
@@ -69,14 +72,14 @@ export const StudentView = () => {
 
     const createdAt = new Date();
     const sessionSubscription = Meteor.subscribe('sessions');
-    const moduleSubscription = Meteor.subscribe('modules');
+    const moduleSubscription = Meteor.subscribe('modules', [params.session]);
 
     const sessionData = SessionsCollection.findOne({ name: params.session });
     const moduleData = sessionData ? ModulesCollection.findOne({ session: sessionData.name, user: user._id }) : undefined;
 
     // when sessions subscription is ready, we are guaranteed to get actual results from queries
     if (sessionSubscription.ready() && moduleSubscription.ready()) {
-
+      console.log(sessionData.name)
       // check if session exists
       if (sessionData == undefined) {
         alert(`Session ${params.session} does not exist!`);
@@ -100,6 +103,7 @@ export const StudentView = () => {
           if (!err) {
             // create first run
             const mod = ModulesCollection.findOne({ session: sessionData.name, user: user._id });
+            console.log(ModulesCollection.find({}).fetch())
             execute({ moduleID: mod._id, code: sessionData.template, pool, createdAt: mod.createdAt }); 
 
           } else {

@@ -11,104 +11,41 @@ import { rateFeedback } from '../imports/api/methods/rateFeedback';
 import { updateModule } from '../imports/api/methods/updateModule';
 import { addSessionUser } from '../imports/api/methods/addSessionUser';
 import { updateSession } from '../imports/api/methods/updateSession';
+import { initializePublications } from './publications';
+import { initializeRules } from './rules';
 
 
 // Placeholder for actual login credentials
 // All passwords are "password"
 export const INSTRUCTOR = "instructor";
-const STUDENTS = [];
 
 Meteor.startup(() => {
-  // TODO: Why include empty array of students???
-  [...STUDENTS, INSTRUCTOR].forEach((name) => {
-    if (!Accounts.findUserByUsername(name)) {
-      Accounts.createUser({
-        username: name,
-        password: "password",
-      });
-    }
-  });
+
+  if (!Accounts.findUserByUsername(INSTRUCTOR)) {
+    Accounts.createUser({
+      username: INSTRUCTOR,
+      password: "password",
+    })
+  }
 
   // create roles
   if (!Meteor.roles.findOne({ _id: 'student' })) {
     Roles.createRole('student');
   }
 
-  if (!Meteor.roles.findOne({ _id: 'instructor' })) {
-    Roles.createRole('instructor');
+  if (!Meteor.roles.findOne({ _id: INSTRUCTOR })) {
+    Roles.createRole(INSTRUCTOR);
   }
 
   // assign roles
-  const instructorID = Meteor.users.findOne({ username: "instructor" })._id;
-  Roles.addUsersToRoles(instructorID, 'instructor');
+  const instructorID = Meteor.users.findOne({ username: INSTRUCTOR })._id;
+  Roles.addUsersToRoles(instructorID, INSTRUCTOR);
 
-  // prevent direct client-side database access
-  // Meteor recommends to use Methods instead for security
-  ModulesCollection.deny({
-    insert() { return true; },
-    update() { return true; },
-    remove() { return true; },
-  });
+  // setup rules so meteor methods must be used
+  initializeRules();
 
-  SessionsCollection.deny({
-    insert() { return true; },
-    update() { return true; },
-    remove() { return true; },
-  });
-
-  SnapshotsCollection.deny({
-    insert() { return true; },
-    update() { return true; },
-    remove() { return true; },
-  });
-
-  FeedbackCollection.deny({
-    insert() { return true; },
-    update() { return true; },
-    remove() { return true; },
-  });
-
-  RunsCollection.deny({
-    insert() { return true; },
-    update() { return true; },
-    remove() { return true; },
-  });
-
-  Meteor.publish('userData', function () {
-    return Meteor.users.find({}, {
-      fields: { username: 1, createdAt: 1, _id: 1 }
-    });
-  });
-
-  Meteor.publish('sessions', function () {
-    return SessionsCollection.find();
-  });
-
-  Meteor.publish('modules', function () {
-    const userID = this.userId;
-    // if instructor, return all modules, else only return modules owned by user making the request
-    return ModulesCollection.find(Roles.userIsInRole(this.userId, 'instructor') ? {} : { user: userID });
-  });
-
-  Meteor.publish('runs', function () {
-    const userID = this.userId;
-    
-    // if instructor, return all runs, else only return modules owned by user making the request
-    const modules = ModulesCollection.find(Roles.userIsInRole(this.userId, 'instructor') ? {} : { user: userID }).fetch();
-    return RunsCollection.find({ module: { $in: modules.map(module => module._id) }});
-  });
-
-  Meteor.publish('snapshots', function () {
-    const userID = this.userId;
-    // if instructor, return all snapshots, else only return modules owned by user making the request
-    return SnapshotsCollection.find(Roles.userIsInRole(this.userId, 'instructor') ? {} : { user: userID });
-  });
-
-  Meteor.publish('feedback', function () {
-    const userID = this.userId;
-    const studentModules = ModulesCollection.find({ user: userID }).fetch();
-    return FeedbackCollection.find(Roles.userIsInRole(this.userId, 'instructor') ? {} : { module: { $in: studentModules.map(m => m._id) } })
-  });
+  // setup publications for limited and secure access
+  initializePublications();
 
   // Very helpful for getting started with Meteor Methods https://guide.meteor.com/methods.html#advanced-boilerplate
   const methods = [createFeedback, createModule, createRun, createSession, updateSession, createSnapshot, rateFeedback, updateModule, addSessionUser];
