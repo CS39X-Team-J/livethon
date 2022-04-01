@@ -2,36 +2,7 @@ import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 import { SessionsCollection, TestsCollection } from '../modules';
 import { Roles } from 'meteor/alanning:roles';
-
-export class TestCase {
-  
-  constructor({ description }) {
-    this.description = description;
-  }
-
-}
-
-// should only be used when the test cannot be implemented with FunctionTestCase
-export class GeneralTestCase extends TestCase {
-
-  constructor({ description, code }) {
-    super({ description });
-    this.code = code;
-  }
-
-}
-
-// for simple input and expected output tests, allows for nicer visual display for students
-export class FunctionTestCase extends TestCase {
-
-  constructor({ description, targetFunction, input, expectedOutput }) {
-    super({ description });
-    this.targetFunction = targetFunction;
-    this.input = input;
-    this.expectedOutput = expectedOutput;
-  }
-    
-}
+import { TestCase } from '../execute';
 
 export const createTestCase = {
   name: 'testcase.create',
