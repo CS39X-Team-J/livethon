@@ -28,7 +28,7 @@ export const removeTestCase = {
         'Cannot delete test with current permissions');
     }
 
-    TestsCollection.deleteOne({ _id: testID });
+    TestsCollection.remove({ _id: testID });
 
   },
 

@@ -31,13 +31,13 @@ export const TestsEdit = () => {
   });
 
   // copy draft to published
-  const publishDraft = ({ testID, draft }) => {
+  const publishDraft = ({ testData }) => {
 
     const createdAt = new Date();
-    const updatedData = new TestCaseData({ published: draft, draft });
+    const updatedData = new TestCaseData({ published: testData.draft, draft: testData.draft });
 
     updateTestCase.call({
-      testID,
+      testID: testData._id,
       test: updatedData,
       createdAt,
     }, handleResponse);
@@ -69,9 +69,9 @@ export const TestsEdit = () => {
     addNewTest({ newData });
   }
 
-  const saveDraft = ({ testID, newDraft }) => {
-    
-    const selectedTest = (testData.filter(test => test._id == testID))[0];
+  const saveDraft = ({ testData, newDraft }) => {
+
+    const selectedTest = (testCaseData.filter(test => test._id == testData._id))[0];
     const published = selectedTest.test.published;
     const updatedData = new TestCaseData({ published, draft: newDraft });
 
@@ -82,7 +82,6 @@ export const TestsEdit = () => {
     }, handleResponse);
 
   }
-
 
   const handleRemove = ({ testID }) => {
     removeTestCase.call({ testID }, handleResponse);
@@ -98,15 +97,15 @@ export const TestsEdit = () => {
       </div>
 
       <div className="TestCases">
-
+        {isReady ? testCaseData.map((testData) => {
+          return (
+            <TestCaseComponent key={testData._id} testData={testData} onChange={saveDraft} onRemove={handleRemove} onPublish={publishDraft}/>
+          );
+        }) : (
+          <p>Loading...</p>
+        )}
       </div>
-      {isReady ? testCaseData.map((testData) => {
-        return (
-          <TestCaseComponent test={testData} onChange={saveDraft} onRemove={handleRemove} onPublish={publishDraft}/>
-        );
-      }) : (
-        <p>Loading...</p>
-      )}
+      
     </div>
   );
 

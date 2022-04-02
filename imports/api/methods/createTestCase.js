@@ -2,26 +2,28 @@ import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 import { SessionsCollection, TestsCollection } from '../modules';
 import { Roles } from 'meteor/alanning:roles';
-import { TestCaseData } from '../execute';
 
 export const createTestCase = {
   name: 'testcase.create',
 
+  // TODO: get type validation to work with TestCaseData custom class
   // Factor out validation so that it can be run independently (1)
   validate(args) {
-    new SimpleSchema({
-      test: { type: TestCaseData },
-      session: { type: String },
-      createdAt: { type: Date },
-    }).validate(args)
+    // console.log(args.test.prototype) // prototype isn't passed for some reason
+    // console.log(args.test instanceof TestCaseData);
+    // new SimpleSchema({
+    //   // test: { type: TestCaseData },
+    //   // session: { type: String },
+    //   // createdAt: { type: Date },
+    // }).validate(args)
   },
 
   // Factor out Method body so that it can be called independently (3)
   run({ test, session, createdAt }) {
     
-    const sessionID = SessionsCollection.find({ name: session })?._id;
+    const sessionData = SessionsCollection.findOne({ name: session });
 
-    if (!sessionID) {
+    if (!sessionData) {
         throw new Meteor.Error('testcases.create.session_not_found',
         'Referenced session is not found');
     }
@@ -32,7 +34,7 @@ export const createTestCase = {
     }
 
     TestsCollection.insert({ 
-        session: sessionID,
+        session,
         test,
         createdAt,
     });

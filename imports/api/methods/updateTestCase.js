@@ -9,11 +9,11 @@ export const updateTestCase = {
 
     // Factor out validation so that it can be run independently (1)
     validate(args) {
-        new SimpleSchema({
-            testID: { type: String },
-            test: { type: TestCaseData },
-            createdAt: { type: Date },
-        }).validate(args)
+        // new SimpleSchema({
+        //     // testID: { type: String },
+        //     // // test: { type: TestCaseData },
+        //     // createdAt: { type: Date },
+        // }).validate(args)
     },
 
     // Factor out Method body so that it can be called independently (3)

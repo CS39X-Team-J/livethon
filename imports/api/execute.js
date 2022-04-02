@@ -5,15 +5,9 @@ export const TestCaseTypes = {
 
 export class TestCase {
 
-    #type;
-
     constructor({ description, type }) {
         this.description = description;
-        this.#type = type;
-    }
-
-    get type() {
-        return this.#type;
+        this.type = type;
     }
 
 }
