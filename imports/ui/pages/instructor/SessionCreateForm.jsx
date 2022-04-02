@@ -30,11 +30,7 @@ export const SessionCreationForm = () => {
   const handleSourceChange = (event) => {
     const target = event.target;
     const name = target.name;
-    setSessionData({...sessionData, [name]: target.value});
-  }
-
-  const navigateTo = (path) => {
-    navigate(path)
+    setSessionData({...sessionData, sourceSelect: {...sessionData.sourceSelect, [name]: target.value}});
   }
 
   const handleChange = (event) => {
@@ -151,7 +147,7 @@ export const SessionCreationForm = () => {
                 name="type"
                 value="import"
                 checked={sessionData.sourceSelect.type === "import"}
-                onChange={handleImport}
+                onChange={handleSourceChange}
               ></input>
               Import a template
             </label>
@@ -197,10 +193,9 @@ export const SessionCreationForm = () => {
                     editorProps={{ $blockScrolling: true }}
                   />
                 )}
-
                 <input
                   type="file"
-                  onChange={this.handleImport}
+                  onChange={handleImport}
                   accept=".py"
                 ></input>
               </div>
