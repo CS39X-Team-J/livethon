@@ -5,10 +5,10 @@ import { useTracker } from "meteor/react-meteor-data";
 import { Meteor } from "meteor/meteor";
 import { InstructorView } from "../pages/instructor/InstructorView";
 import { StudentView } from "../pages/student/StudentView";
-import { SessionView } from "../pages/instructor/SessionView";
-import { SessionEdit } from "../pages/instructor/SessionEdit";
-import { SessionCreate } from "../pages/instructor/SessionCreate";
-import { TestsEdit } from "../pages/instructor/TestsEdit";
+import { SessionEdit } from "../pages/instructor/edit/SessionEdit";
+import { SessionCreate } from "../pages/instructor/create/SessionCreate";
+import { TestsEdit } from "../pages/instructor/test/TestsEdit";
+import { SessionView } from "../pages/instructor/view/SessionView";
 
 export function UserFrame() {
   const params = useParams();

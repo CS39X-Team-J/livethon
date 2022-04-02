@@ -1,13 +1,12 @@
 import React, { Component, useContext, useState } from "react";
-import AceEditor from "react-ace";
-import { SessionsCollection } from "../../../api/modules";
-import { createSession } from "../../../api/methods/createSession";
+import { createSession } from "../../../../api/methods/createSession";
 
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/mode-python";
 import { useNavigate } from "react-router-dom";
 import { useTracker } from "meteor/react-meteor-data";
-import { SessionEditForm } from "./SessionEditForm";
+import { SessionEditForm } from "../../../components/SessionEditForm";
+import { SessionsCollection } from "../../../../api/modules";
 
 export const SessionCreate = () => {
 

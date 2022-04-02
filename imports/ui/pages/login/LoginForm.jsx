@@ -75,7 +75,7 @@ export const LoginForm = () => {
           if (!sessionExists) {
             navigateTo("instructor/session/create");
           } else {
-            navigateTo(`instructor/session/view/${session}`);
+            navigateTo(`instructor/session/id/${session}/view`);
           }
         } else {
           alert("Username or password is incorrect");

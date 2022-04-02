@@ -2,7 +2,7 @@ import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 import { TestsCollection } from '../modules';
 import { Roles } from 'meteor/alanning:roles';
-import { TestCase } from './createTestCase';
+import { TestCaseData } from '../execute';
 
 export const updateTestCase = {
     name: 'testcase.update',
@@ -11,7 +11,7 @@ export const updateTestCase = {
     validate(args) {
         new SimpleSchema({
             testID: { type: String },
-            test: { type: TestCase },
+            test: { type: TestCaseData },
             createdAt: { type: Date },
         }).validate(args)
     },

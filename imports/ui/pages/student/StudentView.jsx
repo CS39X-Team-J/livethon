@@ -80,6 +80,7 @@ export const StudentView = () => {
     const createdAt = new Date();
     const sessionSubscription = Meteor.subscribe('sessions');
     const moduleSubscription = Meteor.subscribe('modules', params.session);
+    // TODO: subscribe to users collection
 
     const sessionData = SessionsCollection.findOne({ name: params.session });
     const moduleData = sessionData ? ModulesCollection.findOne({ session: sessionData.name, user: user._id }) : undefined;

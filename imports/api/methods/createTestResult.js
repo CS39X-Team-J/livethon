@@ -1,7 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 import { RunsCollection, TestResultsCollection, TestsCollection } from '../modules';
-import { Roles } from 'meteor/alanning:roles';
 
 export const createTestResult = {
   name: 'testresult.create',

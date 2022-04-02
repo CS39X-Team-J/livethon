@@ -2,15 +2,15 @@ import React from "react";
 import { Fragment } from "react/cjs/react.production.min";
 import { useTracker } from "meteor/react-meteor-data";
 import { useParams } from "react-router-dom";
-import { ModulesCollection } from "../../../api/modules";
-import { Solution } from "../../components/Solution";
+import { Solution } from "../../../components/Solution";
+import { ModulesCollection } from "../../../../api/modules";
 
 export const SessionView = () => {
 
     const params = useParams();
 
     const modules = useTracker(() => {
-        console.log(params.session)
+        
         const subscription = Meteor.subscribe('modules', params.session);
         if (!subscription.ready()) {
           return [];

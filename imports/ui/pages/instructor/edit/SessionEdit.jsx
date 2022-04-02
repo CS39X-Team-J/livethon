@@ -1,11 +1,11 @@
 import React, { Component, useContext, useState } from "react";
-import { SessionsCollection } from "../../../api/modules";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/mode-python";
 import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
-import { SessionEditForm } from "./SessionEditForm";
-import { updateSession } from "../../../api/methods/updateSession";
+import { SessionEditForm } from "../../../components/SessionEditForm";
+import { updateSession } from "../../../../api/methods/updateSession";
+import { SessionsCollection } from "../../../../api/modules";
 
 export const SessionEdit = () => {
 

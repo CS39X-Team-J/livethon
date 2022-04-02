@@ -2,7 +2,7 @@ import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 import { SessionsCollection, TestsCollection } from '../modules';
 import { Roles } from 'meteor/alanning:roles';
-import { TestCase } from '../execute';
+import { TestCaseData } from '../execute';
 
 export const createTestCase = {
   name: 'testcase.create',
@@ -10,7 +10,7 @@ export const createTestCase = {
   // Factor out validation so that it can be run independently (1)
   validate(args) {
     new SimpleSchema({
-      test: { type: TestCase },
+      test: { type: TestCaseData },
       session: { type: String },
       createdAt: { type: Date },
     }).validate(args)
