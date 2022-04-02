@@ -14,6 +14,9 @@ const VERSIONS = {
 
 export const TestCaseComponent = ({ testData, onChange, onRemove, onPublish }) => {
 
+  const [versionSelected, setVersionSelected] = useState(VERSIONS.DRAFT);
+  const [selectedData, setSelectedData] = useState(null);
+
   const handleChange = ({ newDraft }) => {
     if (versionSelected === VERSIONS.DRAFT) {
       onChange({
@@ -23,8 +26,17 @@ export const TestCaseComponent = ({ testData, onChange, onRemove, onPublish }) =
     }
   }
 
-  const [versionSelected, setVersionSelected] = useState(VERSIONS.DRAFT);
-  const [selectedData, setSelectedData] = useState(null);
+  const toggleVersion = () => {
+    setVersionSelected(versionSelected === VERSIONS.PUBLISHED ? VERSIONS.DRAFT : VERSIONS.PUBLISHED);
+  }
+
+  const deleteTest = () => {
+    onRemove({ testID: testData._id });
+  }
+
+  const publishTest = () => {
+    onPublish({ testData });
+  }
 
   useEffect(() => {
     setSelectedData(versionSelected === VERSIONS.PUBLISHED ? testData.test.publish : testData.test.draft);
@@ -40,9 +52,9 @@ export const TestCaseComponent = ({ testData, onChange, onRemove, onPublish }) =
         
         <p>{ selectedData ? selectedData.description : null }</p>
 
-        <button onClick={() => { setVersionSelected(versionSelected === VERSIONS.PUBLISHED ? VERSIONS.DRAFT : VERSIONS.PUBLISHED) }}>Toggle Version</button>
-        <button onClick={() => { onRemove({ testID: testData._id }); }}>Delete</button>
-        { versionSelected === VERSIONS.DRAFT ? (<button onClick={() => { onPublish({ testCase: testData })}}>Publish</button>) : null }
+        <button onClick={toggleVersion}>Toggle Version</button>
+        <button onClick={deleteTest}>Delete</button>
+        { versionSelected === VERSIONS.DRAFT ? (<button onClick={publishTest}>Publish</button>) : null }
 
       </div>
 
