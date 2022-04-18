@@ -3,8 +3,11 @@ import AceEditor from "react-ace";
 import { SessionsCollection } from "../../../api/modules";
 import { createSession } from "../../../api/methods/createSession";
 
+import "ace-builds/src-min-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/mode-python";
+import "ace-builds/src-noconflict/snippets/python"
+
 import { useNavigate } from "react-router-dom";
 
 export const SessionCreationForm = () => {
@@ -174,6 +177,8 @@ export const SessionCreationForm = () => {
                 onChange={handleEditorChange}
                 debounceChangePeriod={1000}
                 editorProps={{ $blockScrolling: true }}
+                enableLiveAutocompletion= {true}
+                enableSnippets={true}
               />
             ) : (
               <div>
